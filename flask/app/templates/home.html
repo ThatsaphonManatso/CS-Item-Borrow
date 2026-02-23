@@ -58,7 +58,7 @@
 
         <div class="Mbutton">
             <div class="button ml-2" href="/itemlist">search item</div>
-            <div class="button ml-2" href="#">contact us</div>
+            <div class="button ml-2" id="contactUsButton">contact us</div>
         </div>
     </div>
 </div>
@@ -133,6 +133,15 @@
 
         items.forEach(item => {
             observer.observe(item);
+        });
+        const contactUsButton = document.getElementById("contactUsButton");
+        contactUsButton.addEventListener("click", function () {
+            Swal.fire({
+                title: "Contact Info",
+                text: "You can contact the Administrator at email: abcdefg123@gmail.com",
+                icon: "info",
+                confirmButtonText: "OK",
+            });
         });
     });
 </script>

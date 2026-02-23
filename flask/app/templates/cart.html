@@ -160,8 +160,8 @@
             objectList.forEach((object, index) => {
                 const fromDate = new Date(object.dateFT.from);
                 const toDate = new Date(object.dateFT.to);
-                const formattedDate_borrow = `From: ${fromDate.getDate()} ${fromDate.getMonth() + 1} ${fromDate.getFullYear()}`;
-                const formattedDate_return = `To: ${toDate.getDate()} ${toDate.getMonth() + 1} ${toDate.getFullYear()}`;
+                const formattedDate_borrow = `From: ${fromDate.getDate()}-${fromDate.getMonth() + 1}-${fromDate.getFullYear()}`;
+                const formattedDate_return = `To: ${toDate.getDate()}-${toDate.getMonth() + 1}-${toDate.getFullYear()}`;
                 const uniqueId = `${object.item}-${object.dateFT.from}-${object.dateFT.to}-${object.quantity}`;
 
                 const itemRow = document.createElement('div');
@@ -204,16 +204,19 @@
                     let currentItems = JSON.parse(sessionStorage.getItem('myObjectListKey')) || [];
 
                     // Filter out the item to be removed
-                    currentItems = currentItems.filter(item => {
-                        const itemId = `${item.item}-${item.dateFT.from}-${item.dateFT.to}-${item.quantity}`;
-                        return itemId !== idToRemove;
-                    });
+                    if (confirm("Are you sure you want to remove this item?")) {
+                        // Filter out the item to be removed
+                        currentItems = currentItems.filter(item => {
+                            const itemId = `${item.item}-${item.dateFT.from}-${item.dateFT.to}-${item.quantity}`;
+                            return itemId !== idToRemove;
+                        });
 
-                    // Update session storage
-                    sessionStorage.setItem('myObjectListKey', JSON.stringify(currentItems));
+                        // Update session storage
+                        sessionStorage.setItem('myObjectListKey', JSON.stringify(currentItems));
 
-                    // Remove the item from the UI
-                    itemRow.remove();
+                        // Remove the item from the UI
+                        itemRow.remove();
+                    }
                 });
 
 

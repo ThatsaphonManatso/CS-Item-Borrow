@@ -56,11 +56,13 @@
     border-radius: 10px;
     font-weight: bold;
     display: flex;
-    justify-content: center; /* จัดกึ่งกลางแนวนอน */
-    align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+    justify-content: center;
+    /* จัดกึ่งกลางแนวนอน */
+    align-items: center;
+    /* จัดกึ่งกลางแนวตั้ง */
     margin-top: 10px;
     border-radius: 10px;
-    width: 120px; 
+    width: 120px;
     height: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -76,11 +78,13 @@
     border-radius: 10px;
     font-weight: bold;
     display: flex;
-    justify-content: center; /* จัดกึ่งกลางแนวนอน */
-    align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+    justify-content: center;
+    /* จัดกึ่งกลางแนวนอน */
+    align-items: center;
+    /* จัดกึ่งกลางแนวตั้ง */
     margin-top: 10px;
     border-radius: 10px;
-    width: 120px; 
+    width: 120px;
     height: 40px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -89,7 +93,8 @@
     background-color: #e95353;
 }
 
-.button-approve, .button-cancel {
+.button-approve,
+.button-cancel {
     display: inline-block;
     min-width: 100px;
     margin: 0 5px;
@@ -104,8 +109,9 @@
         width: 100%;
         justify-content: center;
     }
-    
-    .button-approve, .button-cancel {
+
+    .button-approve,
+    .button-cancel {
         flex: 1;
         min-width: 0;
         max-width: 150px;
@@ -114,15 +120,17 @@
 
 .history-app {
     width: 100%;
-    height: 100px;
-    margin-top: 30px;
-    margin-bottom: 30px;
     padding: 10px;
     background-color: #ffffff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Align items from top */
+    min-height: 100px;
+    /* Minimum height for smaller content */
+    overflow: hidden;
     transition: all 0.3s ease-in-out;
 }
 
@@ -141,6 +149,12 @@
     border-radius: 10px;
     display: flex;
     align-items: center;
+}
+
+.history-app .content {
+    max-height: 400px;
+    /* Change this based on the desired scrollable height */
+    overflow-y: auto;
 }
 
 .text-head {
@@ -184,14 +198,14 @@
 
 .info-shadows {
     box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
-    padding: 10px; 
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .info-shadows-last {
-    padding: 10px; 
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -245,7 +259,7 @@
         display: flex;
         flex-wrap: nowrap;
     }
-    
+
     .info-content .column {
         flex: 0 0 auto;
         width: 120px !important;
@@ -284,18 +298,19 @@
 
 /* บังคับให้แสดง 4 คอลัมน์ในทุกขนาดหน้าจอ */
 @media screen and (max-width: 768px) {
-    .column.is-3-mobile, 
-    .column.is-3-tablet, 
+
+    .column.is-3-mobile,
+    .column.is-3-tablet,
     .column.is-3-desktop {
         flex: none !important;
         width: 20% !important;
     }
-    
+
     .columns {
         display: flex !important;
         flex-direction: row !important;
     }
-    
+
     /* ข้อความใน mobile ขึ้นบรรทัดใหม่ได้ */
     .text-center {
         white-space: normal;
@@ -308,7 +323,7 @@
         flex: none !important;
         width: 20% !important;
     }
-    
+
     .text-element {
         font-size: 12px !important;
         word-wrap: break-word;
@@ -324,7 +339,7 @@
     }
 
     .info-shadows {
-        padding: 10px; 
+        padding: 10px;
         display: flex;
         justify-content: center;
         align-items: center;

@@ -84,58 +84,57 @@
                     Item List
                 </a>
 
+                {% if not current_user.is_authenticated or  current_user.is_admin == False %}
                 <a id="borrowing" class="navbar-item nav-left" href="{{ url_for('borrowing') }}">
                     Borrowing
                 </a>
-
-                <!-- <a id="approve" class="navbar-item nav-left" href="{{ url_for('approve') }}">
-                    Approve
-                </a> -->
-                {% if current_user.student_id == None %}
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a id="approve" class="navbar-item nav-left" href="{{ url_for('approve') }}"> 
-                        Approve
-                    </a>
-            
-                    <div id="approve-item" class="navbar-dropdown">
-                      <a class="dropdown-item" href="{{ url_for('approve') }}">
-                        Approve
-                      </a>
-                      <hr class="navbar-divider">
-                      <a class="dropdown-item" href="{{ url_for('history_approve') }}">
-                        History Approve
-                      </a>
-                    </div>
-                </div>
-                  
                 {% endif %}
 
+                {% if current_user.student_id == None %}
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a id="approve" class="navbar-item nav-left" href="{{ url_for('approve') }}"> 
+                                Approve
+                            </a>
+                    
+                            <div id="approve-item" class="navbar-dropdown">
+                            <a class="dropdown-item" href="{{ url_for('approve') }}">
+                                Approve
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="dropdown-item" href="{{ url_for('history_approve') }}">
+                                History Approve
+                            </a>
+                            </div>
+                        </div>
 
-                {% if current_user.student_id == None and current_user.is_admin == True %}
-                <div class="navbar-item has-dropdown is-hoverable">
-                    <a id="dashboard" class="navbar-item nav-left" href="{{ url_for('dashboard') }}"> 
-                        Dashboard
-                    </a>
-            
-                    <div id="dashboard-item" class="navbar-dropdown">
-                      <a class="dropdown-item" href="{{ url_for('dashboard') }}">
-                        Dashboard
-                      </a>
-                      <hr class="navbar-divider">
-                      <a class="dropdown-item" href="{{ url_for('returned_borrower') }}">
-                        Returned Borrower
-                      </a>
-                    </div>
-                </div>
-                
 
-                <a id="stock" class="navbar-item nav-left" href="{{ url_for('stock') }}">
-                    Stock
-                </a>
 
-                <a id="manageUser" class="navbar-item nav-left" href="{{ url_for('manage_user') }}">
-                    Manage User
-                </a>
+                    {% if current_user.is_admin == True %}
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a id="dashboard" class="navbar-item nav-left" href="{{ url_for('dashboard') }}"> 
+                                Dashboard
+                            </a>
+                    
+                            <div id="dashboard-item" class="navbar-dropdown">
+                            <a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                                Dashboard
+                            </a>
+                            <hr class="navbar-divider">
+                            <a class="dropdown-item" href="{{ url_for('returned_borrower') }}">
+                                Returned Borrower
+                            </a>
+                            </div>
+                        </div>
+                        
+
+                        <a id="stock" class="navbar-item nav-left" href="{{ url_for('stock') }}">
+                            Stock
+                        </a>
+
+                        <a id="manageUser" class="navbar-item nav-left" href="{{ url_for('manage_user') }}">
+                            Manage User
+                        </a>
+                    {% endif %}
                 {% endif %}
                 
                 {% if current_user.is_authenticated %}

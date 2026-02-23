@@ -4,7 +4,6 @@
 <div class="container" style="margin-top: 30px;">
     <p class="text-title">History</p>
     <div class="head-table">
-        <!-- head table -->
         <div class="columns is-fixed">
             <div class="column is-fixed">
                 <div class="info-shadows">
@@ -33,41 +32,50 @@
             </div>
         </div>
     </div>
+    <br>
 
-    <!-- history -->
     <div class="history-app">
-        <div class="columns is-fixed">
-            <div class="column is-fixed">
+        {% for req in history %}
+        <div class="columns is-fixed" style="align-items: center; display: flex; flex-wrap: nowrap;">
+            <!-- Borrower -->
+            <div class="column is-fixed" style="display: flex; align-items: center; width: 20%; padding: 5px;">
                 <div class="info-shadows">
-                    <div class="text-element">Kimki Eieieie</div>
+                    <div class="text-element">{{ req.name }}</div>
                 </div>
             </div>
-            <div class="column is-fixed">
+
+            <div class="column is-fixed" style="display: flex; flex-direction: column; padding: 5px; width: 30%;">
+                {% for item_name, count in req.item_counts.items() %}
+                <div class="columns is-fixed">
+                    <div class="column is-fixed" style="padding: 5px;">
+                        <div class="info-shadows">
+                            <div class="text-element">{{ item_name }}</div>
+                        </div>
+                    </div>
+                    <div class="column is-fixed" style="padding: 5px;">
+                        <div class="info-shadows">
+                            <div class="text-element">{{ count }}</div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Certifier and Date -->
+            <div class="column is-fixed" style="display: flex; align-items: center; width: 20%; padding: 5px;">
                 <div class="info-shadows">
-                    <div class="text-element">Microphone wireless</div>
+                    <div class="text-element">{{ req.verifier }}</div>
                 </div>
             </div>
-            <div class="column is-fixed">
+            <div class="column is-fixed" style="display: flex; align-items: center; width: 20%; padding: 5px;">
                 <div class="info-shadows">
-                    <div class="text-element">2</div>
+                    <div class="text-element">{{ req.date_bo }} - {{ req.date_re }}</div>
                 </div>
-            </div>
-            <div class="column is-fixed">
-                <div class="info-shadows">
-                    <div class="text-element">Kittipich Kuptavanich</div>
-                </div>
-            </div>
-            <div class="column is-fixed" style="display: flex; justify-content: center; align-items: center; text-align: center;">
-                <div class="text-element">12 Jan 2025 - 15 Jan 2025</div>
             </div>
         </div>
+        <br>
+        {% endfor %}
     </div>
+
 </div>
-
-<script>
-    $(document).on('click', '.approve', function () { 
-        window.location.href = "/approve"; 
-    });
-
-</script>
 {% endblock %}

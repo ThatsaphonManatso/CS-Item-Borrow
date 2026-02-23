@@ -48,5 +48,3 @@ class BorrowRequest(db.Model, SerializerMixin):
     def update_status(self, status):
         self.status = status
 
-    def update_verify_status(self, verify_status):
-        self.verify_status = verify_status

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="static/css/itemlist.css">
 {% endblock %}
 
@@ -11,39 +12,21 @@
             <div class="column is-5">
                 <label class="label Borrow">Borrow</label>
                 <input id="borrow_item" class="input" type="text" name="borrow_item"
-                    placeholder="what you want to borrow?" oninput="fetchSuggestions(this.value)" />
+                    placeholder="What you want to borrow?" oninput="fetchSuggestions(this.value)" />
                 <div id="suggestions" class="suggestions-box" hidden></div>
             </div>
 
-            <div class="block-borrow-search ml-3" style="width: 10%;">
-                <label class="label amount">Amount</label>
-                <input id="amount" type="number" class="input" min="1" placeholder="0">
-            </div>
-
             <div class="column is-2">
-                <label class="label category">Category</label>
-                <input id="category" list="options" class="input" placeholder="Category" />
-                <datalist id="options">
-                    <option value="Stationery">
-                    <option value="Filing Supplies">
-                    <option value="Paper & Consumables">
-                    <option value="Office Equipment">
-                    <option value="IT & Electronics">
-                    <option value="General Office Supplies">
-                    <option value="Office Furniture">
-                </datalist>
-            </div>
-
-            <div class="column is-2">
-                <label class="label start_date">Start</label>
-                <input id="start_date" class="input" type="date" lang="en-GB" />
+                <label class="label start_date">Start Date</label>
+                <input id="start_date" class="input" type="text" lang="en-GB" placeholder="Choose Start Date" />
             </div>
 
             <div class="block-borrow-search ml-3" style="width: 15%;">
-                <label class="label end_date">End</label>
-                <input id="end_date" class="input" type="date" lang="en-GB" />
+                <label class="label end_date">End Date</label>
+                <input id="end_date" class="input" type="text" lang="en-GB" placeholder="Choose End Date" />
             </div>
         </div>
+
         <div class="centerBlock">
             <button type="submit" class="button search-borrow-things" style="width: 40%;">Search</button>
         </div>
@@ -52,12 +35,35 @@
 
 <div class="mt-5">
     <p class="Item-found">Item List</p>
+    {% if not current_user.is_authenticated %}
+    <p style="font-size: 12px; font-weight: normal; color: rgb(161, 43, 43); text-align: center;">Please login to see
+        more items</p>
+    {% endif %}
+    <br>
     <div id="item-list-container"></div> <!-- Container for dynamically loaded items -->
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    document.getElementById('start_date').value = document.querySelector('#start_date')._flatpickr.selectedDates[0] ? document.querySelector('#start_date')._flatpickr.selectedDates[0].toLocaleDateString('en-GB') : '';
+    document.getElementById('end_date').value = document.querySelector('#end_date')._flatpickr.selectedDates[0] ? document.querySelector('#end_date')._flatpickr.selectedDates[0].toLocaleDateString('en-GB') : '';
+
+    // Initialize flatpickr for the start and end date fields with "d m y" format
+    flatpickr("#start_date", {
+        dateFormat: "d m Y",  // Set the date format to d m y
+        minDate: "today",     // Disable past dates
+        defaultDate: "today", // Set default to today's date
+    });
+
+    flatpickr("#end_date", {
+        dateFormat: "d m Y",  // Set the date format to d m y
+        minDate: "today",     // Disable past dates
+        defaultDate: "today", // Set default to today's date
+    });
+
+    // Fetch suggestions for the borrow item field
     async function fetchSuggestions(query) {
         const suggestionBox = document.getElementById('suggestions');
         suggestionBox.innerHTML = '';
@@ -74,9 +80,19 @@
         }
     }
 
+    // Populate the borrow item field with the selected suggestion
     function selectSuggestion(value) {
         document.getElementById('borrow_item').value = value;
         document.getElementById('suggestions').innerHTML = '';
+    }
+
+    // Format the date to match the backend format ("d m Y")
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'short' });
+        const year = date.getFullYear();
+        return `${day} ${month} ${year}`;
     }
 
     // Prevent form submission and perform AJAX call
@@ -88,34 +104,47 @@
     // Fetch items using AJAX
     async function fetchItems() {
         const formData = new FormData(document.getElementById('search-form'));
+
+        // Manually set the start and end date values
+        const startDateInput = document.getElementById('start_date').value || document.querySelector('#start_date')._flatpickr.selectedDates[0]?.toLocaleDateString('en-GB') || '';
+        const endDateInput = document.getElementById('end_date').value || document.querySelector('#end_date')._flatpickr.selectedDates[0]?.toLocaleDateString('en-GB') || '';
+
+        console.log('Start Date Input Value:', startDateInput);
+        console.log('End Date Input Value:', endDateInput);
+
         const queryParams = new URLSearchParams({
-            borrow_item: formData.get("borrow_item"),
-            amount: formData.get("amount"),
-            category: formData.get("category"),
-            start_date: formData.get("start_date"),
-            end_date: formData.get("end_date")
+            borrow_item: formData.get("borrow_item") || "",  // Send empty string if nothing is entered
+            start_date: startDateInput || "",  // Send start date directly
+            end_date: endDateInput || "",  // Send end date directly
         }).toString();
 
-        const response = await fetch(`/api/itemlist?${queryParams}`);
-        const items = await response.json();
+        try {
+            const response = await fetch(`/api/itemlist?${queryParams}`);
+            const data = await response.json();
 
-        const container = document.getElementById('item-list-container');
-        container.innerHTML = '';  // Clear existing items
-
-        let row = null;
-        items.forEach((item, index) => {
-            // Start a new row every 4 items
-            if (index % 4 === 0) {
-                row = document.createElement('div');
-                row.className = 'columns';
-                container.appendChild(row);
+            // Check if the response contains an error
+            if (data.error) {
+                alert(data.error); // Show error message to the user
+                return;
             }
 
-            // Create the card for each item
-            const reserveUrl = `/reserve/${encodeURIComponent(item.category)}`;
-            const card = document.createElement('div');
-            card.className = 'column is-one-quarter-desktop is-12-mobile is-flex is-justify-content-center is-align-items-center';
-            card.innerHTML = `
+            // Clear previous items
+            const container = document.getElementById('item-list-container');
+            container.innerHTML = '';
+
+            // Create item cards
+            let row = null;
+            data.forEach((item, index) => {
+                if (index % 4 === 0) {
+                    row = document.createElement('div');
+                    row.className = 'columns';
+                    container.appendChild(row);
+                }
+
+                const reserveUrl = `/reserve/${encodeURIComponent(item.category)}`;
+                const card = document.createElement('div');
+                card.className = 'column is-one-quarter-desktop is-12-mobile is-flex is-justify-content-center is-align-items-center';
+                card.innerHTML = `
                 <div class="card">
                     ${item.is_new ? '<div class="icon-card">NEW</div>' : ''}
                     <p class="card-header-title is-centered">${item.category}</p>
@@ -125,16 +154,20 @@
                         </figure>
                     </div>
                     <div class="card-content">
-                        <p class="centerBlock"><b>Available: ${item.available_count} pieces</b></p>
+                        <p class="centerBlock"><b>Available Now: ${item.available_count} pieces</b></p>
                     </div>
                     <footer class="card-footer">
                         <a href="${reserveUrl}" class="card-footer-item">Reserve</a>
                     </footer>
                 </div>
             `;
-            // Append the card to the current row
-            row.appendChild(card);
-        });
+                row.appendChild(card);
+            });
+
+        } catch (error) {
+            console.error("Error fetching items:", error);
+            alert("An error occurred while fetching the items.");
+        }
     }
 
     // Trigger fetchItems when page loads

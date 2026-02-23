@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import secrets
 import string
@@ -17,11 +18,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.urls import url_parse
 from werkzeug.utils import secure_filename
 from sqlalchemy.sql import text
-from datetime import datetime
+from datetime import datetime, timedelta
 from sqlalchemy import func
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy.orm import joinedload
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from app import app
 from app import db
 from app import login_manager
@@ -37,6 +38,7 @@ from app.forms.search import Search
 from app.forms.itemlistF import Itemform
 from app.forms.approveF import ApproveF
 from app.forms.stockF import StockForm
+from app.forms.dashF import DashboardForm
 from collections import Counter
 from collections import defaultdict
 from sqlalchemy.orm import aliased
@@ -83,16 +85,32 @@ def login():
 #
 @app.route("/home", methods=["POST", "GET"])
 def HH():
-    items = (
-        db.session.query(
-            Category.name, func.count(Item.id).label("count"), Category.url_img
+    per = "Both"
+    if current_user.is_authenticated:
+        per = who(current_user.id)
+    if per == "Admin":
+        items = (
+            db.session.query(
+                Category.name, func.count(Item.id).label(
+                    "count"), Category.url_img
+            )
+            .join(Category, Item.category_id == Category.id)
+            .group_by(Category.name, Category.url_img)
+            .limit(8)
+            .all()
         )
-        .join(Category, Item.category_id == Category.id)
-        .filter(Item.status == "Available", Category.permission_required == "Both")
-        .group_by(Category.name, Category.url_img)
-        .limit(8)
-        .all()
-    )
+    else:
+        items = (
+            db.session.query(
+                Category.name, func.count(Item.id).label(
+                    "count"), Category.url_img
+            )
+            .join(Category, Item.category_id == Category.id)
+            .filter(Category.permission_required == "Both", Category.permission_required == per)
+            .group_by(Category.name, Category.url_img)
+            .limit(8)
+            .all()
+        )
     return render_template("home.html", items=items)
 
 
@@ -100,7 +118,8 @@ def HH():
 @login_required
 def account():
     borrow_requests = (
-        BorrowRequest.query.filter_by(borrower_id=current_user.id, status="Returned")
+        BorrowRequest.query.filter_by(
+            borrower_id=current_user.id, status="Returned")
         .options(
             joinedload(BorrowRequest.items).joinedload(Item.category),
             joinedload(BorrowRequest.verify_by),
@@ -133,10 +152,17 @@ def account():
 
 
 @app.route("/approve")
-# @login_required
+@login_required
 def approve():
     form = ApproveF()
-    user_pen = BorrowRequest.query.filter(BorrowRequest.status == "Pending").all()
+    us_id = current_user.id
+    permission = who(us_id)
+    user_pen = BorrowRequest.query.filter(
+        BorrowRequest.status == "Pending").all()
+    print(permission)
+    if permission == "Teacher":
+        user_pen = BorrowRequest.query.filter(and_(
+            BorrowRequest.verifier_id == current_user.id, BorrowRequest.verify_status == "Pending")).all()
     borrow_req_pen = []
     for usr in user_pen:
         usr_id = usr.id
@@ -161,13 +187,14 @@ def approve():
 
     # approved
     user_app = BorrowRequest.query.filter(
-        or_(BorrowRequest.status == "Approved", BorrowRequest.status == "Rejected")
+        and_(BorrowRequest.status == "Approve",
+             BorrowRequest.status == "Rejected")
     ).all()
     borrow_req_app = []
     for usr in user_app:
         usr_id = usr.id
         name = usr.borrower.username
-        if usr.status == "Approved":
+        if usr.status == "Approve":
             status_img = "/static/ico/check.png"
         elif usr.status == "Rejected":
             status_img = "/static/ico/reject.png"
@@ -202,14 +229,22 @@ def approve_request():
         id = request.form["id"]
         status = request.form["status"]
         borrow_req = BorrowRequest.query.get(id)
+        cur_admin = who(current_user.id)
+        print(cur_admin)
         if status == "Reject":
             borrow_req.update_status("Rejected")
             db.session.commit()
             message = "Request was successful rejected"
-        elif status == "Approve":
-            borrow_req.update_status("Approved")
-            db.session.commit()
-            message = "Request was successful approved"
+        if cur_admin == "Teacher":
+            if status == "Approve":
+                borrow_req.verify_status = "Approve"
+                db.session.commit()
+                message = "Request was successful approved"
+        else:
+            if status == "Approve":
+                borrow_req.update_status("Approve")
+                db.session.commit()
+                message = "Request was successful approved"
     return redirect(url_for("approve", message=message))
 
 
@@ -225,7 +260,8 @@ def borrowing():
     borrow_requests = (
         BorrowRequest.query.filter(
             BorrowRequest.borrower_id == current_user.id,
-            or_(BorrowRequest.status == "Borrowing", BorrowRequest.status == "Pending"),
+            or_(BorrowRequest.status == "Approve",
+                BorrowRequest.status == "Pending"),
         )
         .options(
             joinedload(BorrowRequest.items).joinedload(Item.category),
@@ -263,7 +299,8 @@ def borrowing():
 
         if matched:
             # Add to existing item_counts
-            matched["item_counts"].update(item_counts)  # Merge counts correctly
+            matched["item_counts"].update(
+                item_counts)  # Merge counts correctly
         else:
             # Append new borrow request
             borrow_data.append(
@@ -305,7 +342,8 @@ def cart_fetch():
                 logging.error("Certifier not provided")
                 return jsonify({"error": "Certifier not provided"}), 400
 
-            verifier = AuthUser.query.filter_by(username=verifier_username).first()
+            verifier = AuthUser.query.filter_by(
+                username=verifier_username).first()
             if not verifier:
                 logging.error(f"Verifier '{verifier_username}' not found")
                 return jsonify({"error": "Verifier not found"}), 400
@@ -318,16 +356,48 @@ def cart_fetch():
 
             borrow_date_str = items_data[0].get("dateFT", {}).get("from")
             return_date_str = items_data[0].get("dateFT", {}).get("to")
-            
+
+            # Strip time part from date strings
+            borrow_date_str = borrow_date_str.split('T')[0]
+            return_date_str = return_date_str.split('T')[0]
+
+            # Convert string dates to datetime.date objects
+            borrow_date = datetime.strptime(borrow_date_str, "%Y-%m-%d").date()
+            return_date = datetime.strptime(return_date_str, "%Y-%m-%d").date()
+
+            # Check if all items share the same date range
             for i in items_data:
-                if borrow_date_str != i.get("dateFT", {}).get("from") or return_date_str != i.get("dateFT", {}).get("to"):
+                item_borrow_date_str = i.get("dateFT", {}).get("from")
+                item_return_date_str = i.get("dateFT", {}).get("to")
+
+                item_borrow_date_str = item_borrow_date_str.split('T')[0]
+                item_return_date_str = item_return_date_str.split('T')[0]
+
+                item_borrow_date = datetime.strptime(
+                    item_borrow_date_str, "%Y-%m-%d").date()
+                item_return_date = datetime.strptime(
+                    item_return_date_str, "%Y-%m-%d").date()
+
+                if borrow_date != item_borrow_date or return_date != item_return_date:
                     logging.error("Please select the same date for all items")
                     return jsonify({"error": "Please select the same date for all items"}), 400
 
             all_item_ids = []  # To store all selected item IDs
             for i in items_data:
                 item_name = i.get("item")
-                amount = int(i.get("quantity"))
+
+                # Get amount safely, with error handling for NoneType
+                amount_str = i.get("quantity")
+                if amount_str is None:
+                    logging.error("Amount is missing or invalid")
+                    return jsonify({"error": "Amount is missing or invalid"}), 400
+
+                # Convert the amount to an integer if it exists and is a valid number
+                try:
+                    amount = int(amount_str)
+                except ValueError:
+                    logging.error(f"Invalid amount value: {amount_str}")
+                    return jsonify({"error": f"Invalid amount value: {amount_str}"}), 400
 
                 category = Category.query.filter_by(name=item_name).first()
                 if not category:
@@ -335,11 +405,15 @@ def cart_fetch():
                     return jsonify({"error": f"Category '{item_name}' not found"}), 400
 
                 category_id = category.id
-                available_items = Item.query.filter_by(category_id=category_id, status='Available').limit(amount).all()
 
-                if len(available_items) < amount:
-                    logging.error(f"{item_name} does not have enough available items")
-                    return jsonify({"error": f"Not enough available '{item_name}' items"}), 400
+                # Check item availability before proceeding
+                if not is_available(borrow_date, return_date, category_id, amount):
+                    logging.error(
+                        f"Not enough available items for {item_name} during this period")
+                    return jsonify({"error": f"Not enough available '{item_name}' items for the requested period"}), 400
+
+                available_items = Item.query.filter_by(
+                    category_id=category_id, status='Available').limit(amount).all()
 
                 item_ids = [item.id for item in available_items]
                 all_item_ids.extend(item_ids)
@@ -354,8 +428,8 @@ def cart_fetch():
                 borrower_id=current_user.id,
                 items=all_item_ids,  # Convert list to string
                 verifier_id=verifier.id,
-                borrow_date=borrow_date_str,
-                return_date=return_date_str,
+                borrow_date=borrow_date,
+                return_date=return_date,
             )
             db.session.add(borrow_request)
             db.session.commit()
@@ -371,17 +445,18 @@ def cart_fetch():
     return jsonify({"error": "Invalid request method"}), 405
 
 
-
 @app.route("/dashboard")
 def dashboard():
-    pending_req_count = BorrowRequest.query.filter(
-        BorrowRequest.status == "Pending"
-    ).count()
+    form = DashboardForm()
+    pending_req_count = BorrowRequest.query.filter(or_
+                                                   (BorrowRequest.status == "Approve",
+                                                    BorrowRequest.verify_status == "Approve")
+                                                   ).count()
     temp_remove_count = BorrowRequest.query.filter(
-        BorrowRequest.status == "Removed"
+        BorrowRequest.status == "Returned"
     ).count()
     borrowing_req = BorrowRequest.query.filter(
-        BorrowRequest.status == "Borrowing"
+        BorrowRequest.status == "Approve", BorrowRequest.verify_status == "Approve"
     ).all()
     borrowing_req_count = len(borrowing_req)
 
@@ -403,16 +478,78 @@ def dashboard():
                 "borrow_date": req.borrow_date,
                 "return_date": req.return_date,
                 "day_left": (req.return_date - datetime.now().date()).days,
+                "borrow_id": req.id,
             }
         )
 
-    return render_template("dashboard.html", count=count, Cur_Bor=Cur_Bor)
+    return render_template("dashboard.html", count=count, Cur_Bor=Cur_Bor, form=form)
+
+
+@app.route("/dash/return", methods=["POST"])
+def return_item():
+    try:
+        data = request.get_json()
+        borrow_id = data.get("borrow_id")
+
+        # Handle the request and update the status of the borrowing item here
+        if borrow_id:
+            # Your code to set the status to "Returned"
+            borrow_request = BorrowRequest.query.get(borrow_id)
+            if borrow_request:
+                borrow_request.status = "Returned"
+                for item in borrow_request.items:
+                    item.status = "Available"
+                db.session.commit()
+
+            return jsonify({"message": "Status updated to Returned"}), 200
+        else:
+            return jsonify({"error": "Invalid borrow_id"}), 400
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return jsonify({"error": "Internal Server Error"}), 500
 
 
 @app.route("/history_approve")
-# @login_required
+@login_required
 def history_approve():
-    return render_template("history_approve.html")
+    cur_usr = who(current_user.id)
+
+    query = BorrowRequest.query.options(
+        joinedload(BorrowRequest.items).joinedload(Item.category),
+        joinedload(BorrowRequest.verify_by),
+        # Eager load borrower to prevent extra queries
+        joinedload(BorrowRequest.borrower),
+    )
+
+    if cur_usr == "Teacher":
+        bor_filter = query.filter(
+            BorrowRequest.verifier_id == current_user.id,
+            or_(BorrowRequest.verify_status == "Approve",
+                BorrowRequest.status == "Reject")
+        ).all()
+    else:
+        bor_filter = query.filter(
+            or_(BorrowRequest.status == "Approve",
+                BorrowRequest.status == "Reject"),
+            # Ensure students see only their history
+            BorrowRequest.borrower_id == current_user.id
+        ).all()
+
+    history = []
+    for req in bor_filter:
+        item_counts = Counter()
+        for items in req.items:
+            item_counts[items.category.name] += 1
+
+        history.append({
+            "name": req.borrower.username if req.borrower else "Unknown",
+            "item_counts": item_counts,
+            "verifier": req.verify_by.username if req.verify_by else "N/A",
+            "date_bo": req.borrow_date.strftime("%d-%m-%Y") if req.borrow_date else "N/A",
+            "date_re": req.return_date.strftime("%d-%m-%Y") if req.return_date else "N/A",
+        })
+    return render_template("history_approve.html", history=history)
 
 
 @app.route("/itemlist")
@@ -423,52 +560,69 @@ def itemlist():
     return render_template("itemlist.html", form=form, search=searchF)
 
 
-@app.route("/api/itemlist", methods=["GET", "POST"])
+@app.route("/api/itemlist", methods=["GET"])
 def itemlist_api():
-    print("hahaha")
-    borrow_item = request.args.get("borrow_item", "")  # Get the search query for item name
-    user = who(current_user.id)
-    
-    # Get all items based on user permissions
-    items_db = (
-        Item.query.join(Category)
-        .filter(
-            or_(
-                Category.permission_required == user,
-                Category.permission_required == "Both",
-            )
-        )
-    )
+    # Default to empty string if not provided
+    borrow_item = request.args.get('borrow_item', '')
+    start_date_str = request.args.get('start_date', '')
+    end_date_str = request.args.get('end_date', '')
+    print(f"Received start_date: {start_date_str}")
+    print(f"Received end_date: {end_date_str}")
 
-    # Filter based on the name if 'borrow_item' is provided
+    # Convert the date strings to datetime objects if they are provided
+    start_date = None
+    end_date = None
+
+    # Parse the dates in "d m y" format (e.g., 06 Mar 2025)
+    if start_date_str:
+        try:
+            start_date = datetime.strptime(start_date_str, "%d %b %Y").date()
+        except ValueError:
+            return jsonify({"error": "Invalid start date format. Use D M Y."}), 400
+
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%d %b %Y").date()
+        except ValueError:
+            return jsonify({"error": "Invalid end date format. Use D M Y."}), 400
+
+    # Initialize the query with all items
+    items_db = Item.query.join(Category)
+
+    # Apply the borrow_item filter if a name is provided
     if borrow_item:
-        items_db = items_db.join(Category).filter(Category.name.ilike(f"%{borrow_item}%"))  # Case-insensitive search
+        items_db = items_db.filter(Category.name.ilike(f"%{borrow_item}%"))
 
-    category_alias = aliased(Category)
-
-    # Update the query to use the alias
-    items_db = db.session.query(Item).join(category_alias, category_alias.id == Item.category_id).filter(
-        db.or_(
-            category_alias.permission_required == 'Student',
-            category_alias.permission_required == 'Both'
-        ),
-        category_alias.name.ilike(f'%{borrow_item}%')
-    )
+    # Fetch the filtered items
     items_db = items_db.all()
 
-    item_counts = Counter()
+    # Prepare the response data
+    item_counts = {}
     new_old_map = {}
-    
-    # Process the items for availability and new items
     today = datetime.now().date()
-    
+
+    # Process the items for availability and new items
     for item in items_db:
-        if item.status == "Available":
-            item_counts[item.category.name] += 1
-        
+        # If start and end dates are provided, check availability based on those dates
+        if start_date and end_date:
+            # Pass the actual start and end dates for availability check
+            if is_available(start_date, end_date, item.category_id, 1):
+                item_counts[item.category.name] = item_counts.get(
+                    item.category.name, 0) + 1
+        else:
+            # If no start and end dates are provided, assume the availability check
+            # is based on the current date range, so we pass `None` for start and end
+            start_date = datetime.now().date()  # Default to today's date
+            end_date = datetime.now().date()    # Default to today's date
+            if is_available(start_date, end_date, item.category_id, 1):
+                item_counts[item.category.name] = item_counts.get(
+                    item.category.name, 0) + 1
+
+        # New item detection logic (items created in the last 7 days are considered "new")
         if (today - item.created_at.date()).days < 7:
             new_old_map[item.category.name] = True
-    # Prepare the response
+
+    # Prepare the items list for the response
     items = [
         {
             "category": category_name,
@@ -478,8 +632,11 @@ def itemlist_api():
         }
         for category_name, category in {item.category.name: item.category for item in items_db}.items()
     ]
-    
+
+    # Return the JSON response with items
     return jsonify(items)
+
+
 
 
 @app.route("/reserve/<string:category_name>")
@@ -504,7 +661,6 @@ def reserve(category_name):
             "available_count": item_count_available,
         }
         return render_template("reserve.html", item=item_info)
-    flash("Please log in to reserve the items.", "notLogin")
     return redirect(url_for("login"))
 
 
@@ -524,14 +680,14 @@ def stock():
     each_items = []
     for cat in ca:
         each_items.append({
-                "id": cat.id,
-                "name": cat.name,
-                "description": cat.description,
-                "url_img": cat.url_img,
-                "count_avail": 0,
-                "count_unava": 0,
-                "count_rep": 0
-            })
+            "id": cat.id,
+            "name": cat.name,
+            "description": cat.description,
+            "url_img": cat.url_img,
+            "count_avail": 0,
+            "count_unava": 0,
+            "count_rep": 0
+        })
     for item in it:
         for each in each_items:
             if item.category_id == each["id"]:
@@ -541,9 +697,8 @@ def stock():
                     each["count_unava"] += 1
                 elif item.status == "Repairing":
                     each["count_rep"] += 1
-    
-    return render_template("stock.html", each_items=each_items, form=form)
 
+    return render_template("stock.html", each_items=each_items, form=form)
 
 
 @app.route("/stock/add", methods=["GET", "POST"])
@@ -579,7 +734,8 @@ def stock_add():
             )
             db.session.add(cate)
 
-            cat_id = db.session.query(Category.id).filter(Category.name == item_name).first()
+            cat_id = db.session.query(Category.id).filter(
+                Category.name == item_name).first()
 
             for i in range(item_quantity):
                 db.session.add(Item(categoty_id=cat_id))
@@ -588,7 +744,6 @@ def stock_add():
         except Exception as e:
             db.session.rollback()
             return redirect(url_for("stock"))
-        
 
     return redirect(url_for("stock"))
 
@@ -610,7 +765,8 @@ def manage_user():
                     continue  # ข้าม row ที่ข้อมูลไม่ครบ
 
                 # ตรวจสอบว่าผู้ใช้มีอยู่ในระบบแล้วหรือไม่ (ป้องกันการซ้ำซ้อน)
-                existing_user = AuthUser.query.filter_by(email=row["email"]).first()
+                existing_user = AuthUser.query.filter_by(
+                    email=row["email"]).first()
                 if existing_user:
                     continue  # ข้ามผู้ใช้ที่มีอยู่แล้ว
 
@@ -619,7 +775,8 @@ def manage_user():
                     username=row["username"],
                     student_id=int(row["student_id"]),
                     email=row["email"],
-                    is_admin=bool(int(row["is_admin"])),  # แปลง 0/1 เป็น Boolean
+                    # แปลง 0/1 เป็น Boolean
+                    is_admin=bool(int(row["is_admin"])),
                     avatar_url=row["avatar_url"] if row["avatar_url"] else None
                 )
 
@@ -629,6 +786,7 @@ def manage_user():
             # Commit การเปลี่ยนแปลง
             db.session.commit()
     return render_template("manage_user.html")
+
 
 @app.route("/returned_borrower")
 # @login_required
@@ -654,7 +812,7 @@ def returned_borrower():
             # Append new borrow request
             borrow_data.append(
                 {
-                    "name":name, 
+                    "name": name,
                     "item_counts": item_counts,
                     "verifier": verifier,
                     "borrow_date": borrow_date,
@@ -673,14 +831,16 @@ def autocomplete():
         suggestions = (
             db.session.query(Category.name)
             .join(Item, Item.category_id == Category.id)
-            .filter(Category.name.ilike(f"%{query}%"))  # Case-insensitive search
+            # Case-insensitive search
+            .filter(Category.name.ilike(f"%{query}%"))
             .distinct()  # Ensure no duplicates
             .limit(5)  # Limit to 5 suggestions
             .all()
         )
         # Return a JSON response with the suggestions
         return jsonify(
-            suggestions=[{"name": suggestion.name} for suggestion in suggestions]
+            suggestions=[{"name": suggestion.name}
+                         for suggestion in suggestions]
         )
     return jsonify(suggestions=[])
 
@@ -741,7 +901,8 @@ def api_users():
     return jsonify(
         [
             {
-                "username": element.username,  # You can return other user details like username or email
+                # You can return other user details like username or email
+                "username": element.username,
                 "student_id": element.student_id,
                 "email": element.email,
                 "is_admin": element.is_admin,
@@ -758,7 +919,8 @@ def api_borrow_requests():
     return jsonify(
         [
             {
-                "borrower": element.borrower.username,  # Assuming the BorrowRequest has a relationship to AuthUser
+                # Assuming the BorrowRequest has a relationship to AuthUser
+                "borrower": element.borrower.username,
                 "item": element.item.name,  # Assuming BorrowRequest has a relationship to Item
                 "status": element.status,
                 "verify_status": element.verify_status,
@@ -810,7 +972,8 @@ def cmu_callback():
 
     try:
         with db.session.begin():
-            user = AuthUser.query.filter_by(email=email).with_for_update().first()
+            user = AuthUser.query.filter_by(
+                email=email).with_for_update().first()
 
             if not user:
 
@@ -862,7 +1025,8 @@ def google_auth():
     gmail = userinfo["email"]
     try:
         with db.session.begin():
-            user = AuthUser.query.filter_by(gmail=gmail).with_for_update().first()
+            user = AuthUser.query.filter_by(
+                gmail=gmail).with_for_update().first()
             if not user:
                 return redirect(
                     url_for(
@@ -882,10 +1046,9 @@ def google_auth():
 
 def who(user_id):
     user = AuthUser.query.get(user_id)
-    student_id = AuthUser.query.filter_by(student_id=user.student_id).first()
-    if student_id:
+    if user.student_id != None and user.is_admin == False:
         return "Student"
-    elif user_id.is_admin:
+    elif user.is_admin:
         return "Admin"
     else:
         return "Teacher"
@@ -935,6 +1098,48 @@ def seed():
     )
     db.session.add(bb)
     db.session.commit()
-    bb.update_status("Pending")
+    bb.update_status("Approve")
     db.session.commit()
     return "", 204
+
+
+def is_overlap(new_borrow_start, new_borrow_end, existing_borrow_start, existing_borrow_end):
+    """Check if the new borrow period overlaps with an existing borrow period."""
+    return (new_borrow_start < existing_borrow_end and new_borrow_end > existing_borrow_start)
+
+
+def is_available(borrow_start, borrow_end, category_id, amount=None, current_year=None):
+    # print(borrow_start)
+    # print(borrow_end)
+    if current_year is None:
+        current_year = datetime.now().year
+
+    # Step 1: Retrieve all existing borrow requests for the specific items
+    borrow_requests = BorrowRequest.query.filter(
+        BorrowRequest.return_date <= datetime(current_year + 1, 1, 1)
+    ).all()
+
+    # Step 2: Track borrowed quantities for the requested category
+    borrowed_quantities = 0
+
+    for borrow_req in borrow_requests:
+        for item in borrow_req.items:
+            if item.category_id == category_id and is_overlap(borrow_start, borrow_end, borrow_req.borrow_date, borrow_req.return_date):
+                borrowed_quantities += 1
+
+    # Step 3: Get available quantity of items for the given category
+    total_available = Item.query.filter_by(
+        category_id=category_id).count()
+
+    available_amount = total_available - borrowed_quantities
+    # Default requested amount to 1 if not provided
+    requested_amount = amount if amount else 0
+    # print(available_amount >= requested_amount)
+    # print(available_amount)
+    # print(borrowed_quantities)
+    # print(requested_amount)
+
+    if available_amount >= requested_amount:
+        return True  # Enough items available
+
+    return False  # Not Enough items available

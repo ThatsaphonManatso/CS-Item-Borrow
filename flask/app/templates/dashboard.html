@@ -8,7 +8,7 @@
     <div class="columns is-centered" style="margin-top:50px;">
         <div class="column is-four-fifths">
             {% for req in Cur_Bor %}
-            <div class="columns">
+            <div id="borrow-{{ req.borrow_id }}" class="columns">
                 <div class="box curr-show-box" style="margin-top: 5px; padding: 0;">
                     <div class="columns is-centered" style="box-shadow: 0px 6px 4px -6px rgba(0, 0, 0, 0.3);">
                         <div class="column">
@@ -34,6 +34,16 @@
                             </div>
                             <div class="column has-text-centered" style="padding: 30px;">
                                 <span>Borrowing {{ req.day_left }} Day-Left</span><br>
+                            </div>
+                            <div class="column has-text-centered" style="padding: 30px;">
+                                <form id="return-form" action="/dash/return" method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <input type="hidden" name="borrow_id" value="{{ req.borrow_id }}">
+                                    <button class="return_req" type="button" onclick="submitReturnRequest('{{ req.borrow_id }}')">Return</button><br>
+                                </form>
+                                <div id="status-{{ req.borrow_id }}">
+                                    <span>{{ req.status }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -68,7 +78,7 @@
             <div class="columns is-one-third is-flex is-justify-content-right" style="margin-bottom:50px">
                 <div class="box show-box">
                     <div style="margin-bottom:5px;font-size: large;">
-                        <b> Removed </b>
+                        <b> Returned </b>
                     </div>
                     <div class="field">
                         <h1 class="show-box-text"><b>{{ count[1] }}</b></h1>
@@ -78,49 +88,6 @@
 
         </div>
         <br>
-
-        <!-- end row show curr  -->
-
-        <!-- <br>
-        <div class="columns justify-content-center stock-row ">
-            <div class="column is-one-fifth">
-                <h2 class="stock"><b>Stock</b></h2>
-            </div>
-            <div class="column">
-                <h3 style="border-radius:5px;" >All items : 50 items</h3>
-            </div>
-            <div class="column columns is-centered is-one-fifth" >
-                <button type="submit" class="button is-primary btn2" id="add-bt">Add</button>
-            </div>
-
-        </div> -->
-
-        <!-- <div class="columns is-centered"> row stock item -->
-        <!-- <div class="column"> -->
-
-        <!-- <div class="box show-stock">
-                    <div class="field">
-                        <div class="columns is-centered">
-                            <div class="column">
-                                <img src="static/ico/microphone.png" class="img-stock">
-                                
-                            </div>
-                        </div>
-
-                        <div class="columns is-centered">
-                            <div class="column">
-                                <span><b>Microphone Wireless</b></span><br>
-                            </div>
-                            <div class="column is-flex is-justify-content-flex-end" >
-                                <button class="icon" ><img src="static/ico/del_button.png"></button>
-                                <button class="icon" ><img src="static/ico/edit_button.png"></button>
-                            </div>
-                        </div>
-
-                    </div> -->
-        <!-- </div> end card show-box -->
-        <!-- </div> -->
-        <!-- </div> end row stock item -->
     </div>
 
 
@@ -128,4 +95,40 @@
 
 
     <link rel="stylesheet" href="static/css/dashboard.css">
+    <script>
+        function submitReturnRequest(borrow_id) {
+            console.log("Borrow ID:", borrow_id); // Log to verify the value
+
+            // If borrow_id is null or undefined, return early
+            if (!borrow_id) {
+                console.error("Borrow ID is not valid!");
+                return;
+            }
+
+            var data = {
+                borrow_id: borrow_id
+            };
+
+            fetch('/dash/return', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'  // CSRF protection
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert('Status updated to Returned');
+                    // Hide the borrowing column with the specific borrow_id
+                    document.getElementById(`borrow-${borrow_id}`).style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+
+
+
     {% endblock %}

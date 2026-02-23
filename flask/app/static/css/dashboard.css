@@ -123,3 +123,34 @@
 /* } */
 
 /* ---- */
+
+.return_req {
+    background-color: rgb(248, 248, 248);
+    /* Set the background to yellow */
+    color: black;
+    /* Set the text color to black for contrast */
+    border: 2px solid #a0a0a0;
+    /* A border with a golden hue to match the yellow theme */
+    padding: 10px 20px;
+    /* Add some padding to make the button bigger */
+    border-radius: 5px;
+    /* Rounded corners */
+    font-size: 16px;
+    /* Set a reasonable font size */
+    cursor: pointer;
+    /* Change the cursor to a pointer to indicate it's clickable */
+    transition: background-color 0.3s, transform 0.2s;
+    /* Add transition effects for hover */
+}
+
+.return_req:hover {
+    background-color: #6e6a64;
+    /* Darker yellow when hovering */
+    transform: scale(1.05);
+    /* Slightly increase size on hover */
+}
+
+.return_req:active {
+    background-color: #363636;
+    /* Even darker yellow when the button is clicked */
+}

@@ -1,7 +1,12 @@
 {% extends "base.html" %}
-{% block content %}
 
-<link href="/static/css/reserve.css" rel="stylesheet">
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+<link rel="stylesheet" href="/static/css/base.css" >
+<link rel="stylesheet" href="/static/css/reserve.css" >
+{% endblock %}
+
+{% block content %}
 <div class="container is-justify-content-center">
 
     <div class="big-box is-justify-content-center">
@@ -33,12 +38,12 @@
 
                 <div class="column">
                     <label class="label start_date">Start</label>
-                    <input id="start_date" class="input margin-info" type="date" lang="en-GB" name="start_date" value="">
+                    <input id="start_date" class="input margin-info" type="date" lang="en-GB" name="start_date" value="" min="1" required>
                 </div>
 
                 <div class="block-borrow-search column">
                     <label class="label end_date">End</label>
-                    <input id="end_date" class="input" type="date" lang="en-GB" name="end_date" value="">
+                    <input id="end_date" class="input" type="date" lang="en-GB" name="end_date" value="" min="1" required>
                 </div>
 
                 <div class="column is-centered sbt">
@@ -73,7 +78,7 @@
                 <ul class="days"></ul>
             </div>
 
-            <div class="columns dot-box is-centered">
+            <!-- <div class="columns dot-box is-centered">
                 <div class="column is-narrow">
                     <img class="dot" src="/static/ico/round_0f0.png">
                     <span class="dot-font">All items can reserve</span>
@@ -86,8 +91,7 @@
                     <img class="dot" src="/static/ico/round_f00.png">
                     <span class="dot-font">Can not reserve</span>
                 </div>
-            </div>
-
+            </div> -->
         </div>
     </div>
 </div>
@@ -141,7 +145,16 @@
                 image_url: formDataObject.image_url,
             };
 
-            cartItems.push(newItem);
+             const itemIndex = cartItems.findIndex(item => item.item === newItem.item && item.dateFT.from === newItem.dateFT.from);
+
+
+            if (itemIndex !== -1) {
+                // Replace the existing item with the new item
+                cartItems[itemIndex] = newItem;
+            } else {
+                // Otherwise, add a new item
+                cartItems.push(newItem);
+            }
             sessionStorage.setItem('myObjectListKey', JSON.stringify(cartItems));
 
             window.location.href = '/cart';
