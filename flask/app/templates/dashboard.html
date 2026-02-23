@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container has-text-centered">
+    <div class="columns" style="margin-top:50px;font-size: 200%;margin-top:20px;">
+        <h1><b>Current Borrowing</b></h1>
+    </div>
+    <div class="columns is-centered" style="margin-top:50px;">
+        <div class="column is-four-fifths">
+            {% for req in Cur_Bor %}
+            <div class="columns">
+                <div class="box curr-show-box" style="margin-top: 5px; padding: 0;">
+                    <div class="columns is-centered" style="box-shadow: 0px 6px 4px -6px rgba(0, 0, 0, 0.3);">
+                        <div class="column">
+                            <span><b>Borrower : </b></span>
+                            <span>{{ req.name }}</span>
+                            {% for item_name, count in req.item_counts.items() %}
+                            <div class="columns is-centered"
+                                style="box-shadow: 0px 4px 6px -2px rgba(0, 0, 0, 0.2); padding-bottom: 10px;">
+                                <div class="column is-centered info-shadows" style="padding: 30px;">
+                                    <span>{{ item_name }}</span><br>
+                                </div>
+                                <div class="column has-text-centered info-shadows" style="padding: 30px;">
+                                    <span>Amount : {{ count }}</span><br>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="column">
+                            <span><b>Certifier : </b></span>
+                            <span>{{ req.verifier }}</span>
+                            <div class="column has-text-centered info-shadows " style="padding: 30px;">
+                                <span>From:{{ req.borrow_date }} Till:{{ req.return_date }}</span><br>
+                            </div>
+                            <div class="column has-text-centered" style="padding: 30px;">
+                                <span>Borrowing {{ req.day_left }} Day-Left</span><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="column is-one-fifths is-justify-content-right">
+            <div class="columns is-one-third is-flex is-justify-content-right" style="margin-bottom:50px">
+                <div class="box show-box">
+                    <div style="margin-bottom:5px;font-size: large;">
+                        <b> Waiting </b>
+                    </div>
+                    <div class="field">
+                        <h1 class="show-box-text"><b>{{ count[0] }}</b></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns is-one-third is-flex is-justify-content-right" style="margin-bottom:50px">
+                <div class="box show-box">
+                    <div style="margin-bottom:5px;font-size: large;">
+                        <b> Borrowing </b>
+                    </div>
+                    <div class="field">
+                        <h1 class="show-box-text"><b>{{ count[2] }}</b></h1>
+                    </div>
+                </div>
+            </div>
+
+            <div class="columns is-one-third is-flex is-justify-content-right" style="margin-bottom:50px">
+                <div class="box show-box">
+                    <div style="margin-bottom:5px;font-size: large;">
+                        <b> Removed </b>
+                    </div>
+                    <div class="field">
+                        <h1 class="show-box-text"><b>{{ count[1] }}</b></h1>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
+
+        <!-- end row show curr  -->
+
+        <!-- <br>
+        <div class="columns justify-content-center stock-row ">
+            <div class="column is-one-fifth">
+                <h2 class="stock"><b>Stock</b></h2>
+            </div>
+            <div class="column">
+                <h3 style="border-radius:5px;" >All items : 50 items</h3>
+            </div>
+            <div class="column columns is-centered is-one-fifth" >
+                <button type="submit" class="button is-primary btn2" id="add-bt">Add</button>
+            </div>
+
+        </div> -->
+
+        <!-- <div class="columns is-centered"> row stock item -->
+        <!-- <div class="column"> -->
+
+        <!-- <div class="box show-stock">
+                    <div class="field">
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <img src="static/ico/microphone.png" class="img-stock">
+                                
+                            </div>
+                        </div>
+
+                        <div class="columns is-centered">
+                            <div class="column">
+                                <span><b>Microphone Wireless</b></span><br>
+                            </div>
+                            <div class="column is-flex is-justify-content-flex-end" >
+                                <button class="icon" ><img src="static/ico/del_button.png"></button>
+                                <button class="icon" ><img src="static/ico/edit_button.png"></button>
+                            </div>
+                        </div>
+
+                    </div> -->
+        <!-- </div> end card show-box -->
+        <!-- </div> -->
+        <!-- </div> end row stock item -->
+    </div>
+
+
+
+
+
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    {% endblock %}

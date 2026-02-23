@@ -1,0 +1,303 @@
+.card {
+    box-sizing: border-box;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding-bottom: 0;
+}
+
+.card-content {
+    transition: transform 0.5s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.is-hidden {
+    display: none;
+}
+
+.show-stock{
+    display: block;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    width: 210px;
+    height: 230px;
+    background-color: #ffffff;
+}
+
+.edit-stock {
+    display: block;
+    box-sizing: border-box;
+    background-color: #ffffff;  
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 10px 35px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* transition: all 0.3s ease-in-out; */
+    width: 210px;
+    height: 230px;
+    min-height: min-content;
+}
+
+.status-item-show{
+    box-sizing: border-box;
+    max-width: auto;
+    height: auto;
+    max-height: 28px;
+}
+
+.edit-butt {
+    background: none; 
+    border: none;
+    cursor: pointer;
+    justify-content: space-between;
+    width: 25px;
+    height: 20px;
+}
+
+.edit-icon {
+    width: 25px; 
+    height: auto;
+    margin: none;   
+}
+
+.del-icon {
+    width: 20px; 
+    height: auto;
+    padding-bottom: 5px;
+    /* margin: none; */
+}
+
+
+.butt-row{
+    border: none;
+    margin: none;
+}
+
+
+
+.show-stock:hover{
+    background-color: #f0f0f0;
+    transition: 0.3s;
+    transform: scale(1.05);
+} 
+
+.edit-butt:hover{
+    background-color:none;
+    transition: 0.3s;
+    transform: scale(1.05);
+} 
+
+.modal-content {
+    max-width: 1000px;
+    max-height: 800px;
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+    width: auto;
+    /* height: 600px; */
+}
+
+.modal-background {
+    background: rgba(0, 0, 0, 0.5);
+}
+    
+.show-img{
+    max-width: 100px;
+    max-height: 100px;
+    padding-top: 10px;
+    border-radius: 20px;
+    /* font-size: 200%;   */
+    /* padding: none;
+    border: none;
+    margin: none; */
+}
+
+
+
+
+#cancel-bt{
+    background-color: #fbfbfb;
+    color: rgb(0, 0, 0);
+    border: #dcdcdc;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transform: scale(1.02);
+}
+
+#add-bt{
+    background-color: #78A3FF;
+    color: rgb(0, 0, 0);
+    border: #dcdcdc;
+    border-radius: 5px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transform: scale(1.02);
+    
+}
+
+
+
+
+.info-box{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    font-size: 100%;
+    
+}
+
+.info-box:hover{
+    transform: scale(1.02);
+}
+
+.main-row{
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;    
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+}
+
+.plus-bt{
+    background-color: #fbfbfb;
+    color: rgb(0, 0, 0);
+    border: #dcdcdc;
+    border-radius: 5px;
+    width: 50%; 
+    height: 50%;
+    font-size: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.rows{
+    /* margin-bottom: 30px; */
+    padding-bottom: 20px;
+}
+
+.change-img-butt{
+    width: 80px;
+    height: 40px;
+}
+
+.ico{
+    background: none;
+    max-width: 180px;
+    max-height: 150px;
+    border-radius: 5px;
+}
+
+/* #preview{
+    width: 100px;
+    height: 100px;
+} */
+
+/* .ico{
+    background: none;
+    max-width:100%;
+    max-height: 100%;
+} */
+
+.add-img-butt{
+    margin-top: 10px;
+    padding: none;
+}
+
+.status-item{
+    font-size: 60%;
+    padding: 2px;
+    font-weight: 500;
+    color: #777;
+}
+
+#preview2{
+    max-width: 250px;
+    max-height: 250px;
+}
+
+
+/* แก้ไข .row ให้จัดเรียงตรงกลาง */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center !important; /* เปลี่ยนจาก flex-start เป็น center */
+    align-items: center; /* เปลี่ยนจาก flex-start เป็น center */
+    padding-bottom: 0;
+    width: 100%;
+}
+
+/* ปรับแก้ .custom-column ให้มีการจัดวาง margin ที่เหมาะสม */
+.custom-column {
+    flex: 1 1 23%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin: 0 auto !important; /* เพิ่ม margin auto ซ้าย-ขวา */
+    text-align: center; /* จัดข้อความให้อยู่ตรงกลาง */
+    display: flex;
+    justify-content: center;
+}
+
+/* ปรับแก้ .con-margin ให้มีการจัดตำแหน่งที่ดีขึ้น */
+.con-margin {
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+/* ปรับแก้การแสดงผลของ card */
+.card {
+    box-sizing: border-box;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding-bottom: 0;
+    margin: 0 auto; /* เพิ่ม margin auto ซ้าย-ขวา */
+}
+
+/* ปรับ media queries ให้ยังคงอยู่ตรงกลางเมื่อหน้าจอเปลี่ยนขนาด */
+@media (max-width: 768px) {
+    .custom-column {
+        flex: 1 1 48%;
+        margin: 0 auto !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .custom-column {
+        flex: 1 1 100%;
+        margin: 0 auto !important;
+    }
+}
+  

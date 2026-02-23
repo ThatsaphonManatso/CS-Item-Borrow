@@ -1,0 +1,340 @@
+<!doctype html>
+
+<html>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bulma CSS framework -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <!-- base CSS -->
+    <link rel="stylesheet" href="static/css/base.css">
+
+    <!-- font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- JQuery -->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.0.js" integrity="sha384-OgVRvuATP1z7Jj0p5aRk1He1E92zshc3RjYxxZo1lCwW6frHgFAfY5tJ1OynbaTZ" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>CS BORROW</title>
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body class="roboto-font">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <nav class="navbar has-background-black" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <p class="navbar cs_borrow px-5 has-text-black">
+                <span class="cs-font"><b>CS</b></span>
+                <span class="borrow-font"><b>BORROW</b></span>
+            </p>
+            
+            <!-- <div class="navbar-burger"> -->
+                <!-- <div class="searchSmall">
+                    <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Search Icon">
+                    <div id="circle-behind-search-icon"></div>
+                    <input class="pr-2 pl-1" type="text" placeholder="Search">
+                </div> -->
+
+                <!-- {% if current_user.is_authenticated %}
+                    <div class="mr-2 avatarSmall is-hidden-desktop">
+                        <div class="buttons">
+                            <a href="{{ url_for('account') }}">
+                                <figure class="image img-nav">
+                                    <img class="is-rounded" src="{{ current_user.avatar_url }}"/>
+                                </figure>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %} -->
+
+                <a role="button" class="navbar-burger has-text-white" data-target="navbarPage" aria-label="menu" aria-expanded="false">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+
+            <!-- </div> -->
+        </div>
+        
+        <div id="navbarPage" class="navbar-menu">
+            <div class="navbar-start">
+
+                <a id="home" class="navbar-item nav-left px-4" href="{{ url_for('HH') }}">
+                    Home
+                </a>
+        
+                <a id="itemlist" class="navbar-item nav-left" href="{{ url_for('itemlist') }}">
+                    Item List
+                </a>
+
+                <a id="borrowing" class="navbar-item nav-left" href="{{ url_for('borrowing') }}">
+                    Borrowing
+                </a>
+
+                <!-- <a id="approve" class="navbar-item nav-left" href="{{ url_for('approve') }}">
+                    Approve
+                </a> -->
+                {% if current_user.student_id == None %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a id="approve" class="navbar-item nav-left" href="{{ url_for('approve') }}"> 
+                        Approve
+                    </a>
+            
+                    <div id="approve-item" class="navbar-dropdown">
+                      <a class="dropdown-item" href="{{ url_for('approve') }}">
+                        Approve
+                      </a>
+                      <hr class="navbar-divider">
+                      <a class="dropdown-item" href="{{ url_for('history_approve') }}">
+                        History Approve
+                      </a>
+                    </div>
+                </div>
+                  
+                {% endif %}
+
+
+                {% if current_user.student_id == None and current_user.is_admin == True %}
+                <div class="navbar-item has-dropdown is-hoverable">
+                    <a id="dashboard" class="navbar-item nav-left" href="{{ url_for('dashboard') }}"> 
+                        Dashboard
+                    </a>
+            
+                    <div id="dashboard-item" class="navbar-dropdown">
+                      <a class="dropdown-item" href="{{ url_for('dashboard') }}">
+                        Dashboard
+                      </a>
+                      <hr class="navbar-divider">
+                      <a class="dropdown-item" href="{{ url_for('returned_borrower') }}">
+                        Returned Borrower
+                      </a>
+                    </div>
+                </div>
+                
+
+                <a id="stock" class="navbar-item nav-left" href="{{ url_for('stock') }}">
+                    Stock
+                </a>
+
+                <a id="manageUser" class="navbar-item nav-left" href="{{ url_for('manage_user') }}">
+                    Manage User
+                </a>
+                {% endif %}
+                
+                {% if current_user.is_authenticated %}
+                    <a class="navbar-item is-hidden-desktop" href="{{ url_for('account') }}">
+                        Account
+                    </a>
+                    <a class="navbar-item is-hidden-desktop" href="{{ url_for('logout') }}">
+                        Log out
+                    </a>
+                {% else %}
+                    <a class="navbar-item is-hidden-desktop" href="{{ url_for('login') }}">
+                        Log in
+                    </a>
+                
+
+                {% endif %}
+            </div>
+        
+            <div class="navbar-end">
+            
+                {% if current_user.is_authenticated %}
+                    <div class="mr-2 is-hidden-touch">
+                        <div class="buttons">
+                            <a href="{{ url_for('account') }}">
+                                <figure class="image img-nav">
+                                    <img class="is-rounded" src="{{ current_user.avatar_url }}"/>
+                                </figure>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if current_user.is_authenticated %}
+                    <div class="mr-5 is-hidden-touch">
+                        <div class="buttons">
+                            <a class="button is-primary Login" href="{{ url_for('logout') }}">
+                                <strong>Log out</strong>
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="mr-5 is-hidden-touch">
+                        <div class="buttons">
+                            <a class="button is-primary Login" href="{{ url_for('login') }}">
+                                <strong>Log in</strong>
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+  
+    {% if current_user.is_authenticated %}
+        <a class="floating-button" href="{{ url_for('cart') }}">
+            <figure class="image is-32x32 cart">
+                <img src="/static/ico/shopping-cart.png" class="cart-img">
+            </figure>
+        </a>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% block extra_js %}{% endblock %}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll(".navbar-item");
+            links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add("is-active");
+            }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let dash = document.querySelector('#approve');
+
+            dash.addEventListener('mouseenter', () => {
+                dash.style.backgroundColor = 'white';
+                dash.style.color = 'black';
+            });
+
+            dash.addEventListener('mouseleave', () => {
+                dash.style.backgroundColor = 'black';
+                dash.style.color = 'white';
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll("#approve");
+            links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add("approve-active");
+            }
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dashboard_item = document.getElementById('approve-item');
+            let dashboard = document.querySelector('#approve');
+
+            dashboard_item.addEventListener('mouseenter', () => {
+                dashboard.style.backgroundColor = 'white';
+                dashboard.style.color = 'black';
+            });
+
+            dashboard_item.addEventListener('mouseleave', () => {
+                dashboard.style.backgroundColor = 'black';
+                dashboard.style.color = 'white';
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let dashboard = document.querySelector('#approve');
+
+            dashboard.addEventListener('mouseenter', () => {
+                dashboard.style.backgroundColor = 'white';
+                dashboard.style.color = 'black';
+            });
+
+            dashboard.addEventListener('mouseleave', () => {
+                dashboard.style.backgroundColor = 'black';
+                dashboard.style.color = 'white';
+            });
+        });
+
+        ////////////////////////////////
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let dash = document.querySelector('#dashboard');
+
+            dash.addEventListener('mouseenter', () => {
+                dash.style.backgroundColor = 'white';
+                dash.style.color = 'black';
+            });
+
+            dash.addEventListener('mouseleave', () => {
+                dash.style.backgroundColor = 'black';
+                dash.style.color = 'white';
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let links = document.querySelectorAll("#dashboard");
+            links.forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add("dashboard-active");
+            }
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const dashboard_item = document.getElementById('dashboard-item');
+            let dashboard = document.querySelector('#dashboard');
+
+            dashboard_item.addEventListener('mouseenter', () => {
+                dashboard.style.backgroundColor = 'white';
+                dashboard.style.color = 'black';
+            });
+
+            dashboard_item.addEventListener('mouseleave', () => {
+                dashboard.style.backgroundColor = 'black';
+                dashboard.style.color = 'white';
+            });
+        });
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let dashboard = document.querySelector('#dashboard');
+
+            dashboard.addEventListener('mouseenter', () => {
+                dashboard.style.backgroundColor = 'white';
+                dashboard.style.color = 'black';
+            });
+
+            dashboard.addEventListener('mouseleave', () => {
+                dashboard.style.backgroundColor = 'black';
+                dashboard.style.color = 'white';
+            });
+        });
+
+        $(document).ready(function() {
+
+            // Check for click events on the navbar burger icon
+            $(".navbar-burger").click(function() {
+
+                // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                $(".navbar-burger").toggleClass("is-active");
+                $(".navbar-menu").toggleClass("is-active");
+
+            });
+        });
+    </script>
+</body>
+
+
+</html>

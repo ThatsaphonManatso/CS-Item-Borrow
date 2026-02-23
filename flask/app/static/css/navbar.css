@@ -1,0 +1,76 @@
+.navbar {
+  background-color: #222; /* Dark background */
+  color: #fff; /* Light text color */
+  /* ... other styles for padding, etc. */
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Distribute space between left and right sections */
+  align-items: center; /* Vertically align items */
+  height: 60px; /* Adjust height as needed */
+  padding-top:0;
+}
+
+.navbar-content {
+  display: flex;
+  width: 100%;
+  padding-left: 5px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  padding-top: 0;
+}
+
+.brand-text {
+  margin-left: 10px; /* Space between image and text */
+  font-size: 14px; /* Adjust font size as needed */
+  line-height: 1; /* Adjust line height for the <br> */
+}
+
+.navbar-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.nav-item {
+  padding-top: 10px;
+  padding-left: 0;
+  margin-left: 20px; /
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #fff;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-form {
+  display: flex;
+}
+
+.profile-link {
+  margin-left: 20px;
+}
+
+.profile-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* Make it round */
+}
+
+
+/* ... more styles as needed */

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="/static/css/account.css" rel="stylesheet">
+
+<div class="container" style="font-size: 30px;">
+  <div class="columns is-desktop">
+    <div class="column is-4">
+      <div class="box-profile">
+        <div class="img-profile">
+          <img src="{{ user.avatar_url }}" alt="profile" style="width: 100%; height: 100%;">
+        </div>
+        <div class="columns text-profile">
+          <span><b>Name : </b></span>
+          <span>&nbsp;{{ user.username }}</span>
+        </div>
+        <div class="columns text-profile">
+          <span><b>Student ID : </b></span>
+          <span>&nbsp;{{ user.student_id }}</span>
+        </div>
+        <div class="columns text-profile">
+          <span><b>Email : </b></span>
+          <span>&nbsp;{{ user.email }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="column is-8">
+      <div class="box-history">
+        <div class="text-title" style="text-align: left;">Borrow History</div>
+        <table class="table is-striped">
+          <thead>
+            <tr>
+              <th class="text-info" style="width: 25%; text-align: center;">Item</th>
+              <th class="text-info" style="width: 25%; text-align: center;">Amount</th>
+              <th class="text-info" style="width: 25%; text-align: center;">Verify By</th>
+              <th class="text-info" style="width: 25%; text-align: center;">Date</th>
+            </tr>
+            <tr>
+              <td colspan="4" style="border-top: 4px solid #a8a8a8; padding: 10px; background-color: #f5f5f5;"></td>
+            </tr>
+          </thead>
+          <tbody>
+            {% for data in borrow_data %}
+            {% for item_name, count in data.item_counts.items() %}
+            <tr class="borrow-request" data-return-date="{{ data.borrow_date.split(' - ')[1] }}">
+              <td style="width: 20%; text-align: center; font-size: 20px;">{{ item_name }}</td>
+              <td style="width: 10%; text-align: center; font-size: 20px;">{{ count }}</td>
+
+              {% if loop.first %}
+              <td style="width: 35%; text-align: center; font-size: 20px;" rowspan="{{ data.item_counts|length }}">
+                {{ data.verifier }}
+              </td>
+              <td style="width: 35%; text-align: center; font-size: 20px;" rowspan="{{ data.item_counts|length }}">
+                {{ data.borrow_date }} 
+                <br><span class="days-left" style="font-size: 18px; color: red;"></span>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+            <tr>
+              <td colspan="4" style="border-top: 4px solid #a8a8a8; padding: 10px; background-color: #f5f5f5;"></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to calculate the remaining days
+  function calculateRemainingDays(returnDate) {
+      const currentDate = new Date();
+      const endDate = new Date(returnDate);
+      const timeDiff = endDate - currentDate;
+      const remainingDays = Math.ceil(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+      return remainingDays;
+  }
+
+  // Function to update remaining days dynamically for each borrow request
+  document.addEventListener("DOMContentLoaded", function () {
+      const borrowRequestElements = document.querySelectorAll('.borrow-request');
+      borrowRequestElements.forEach(function (element) {
+          const returnDate = element.getAttribute('data-return-date');
+          const remainingDays = calculateRemainingDays(returnDate);
+
+          const daysLeftElement = element.querySelector('.days-left');
+          if (remainingDays > 0) {
+              daysLeftElement.textContent = `(${remainingDays} days left)`;
+          } else {
+              daysLeftElement.textContent = '(Returned)';
+          }
+      });
+  });
+</script>
+
+{% endblock %}

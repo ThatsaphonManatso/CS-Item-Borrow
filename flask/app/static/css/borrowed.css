@@ -1,0 +1,92 @@
+.head-table {
+    width: 100%;
+    height: 80px;
+    color: #000000;
+    margin-top: 30px;
+    background-color: #dddddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.box-borrowed {
+    width: 100%;
+    height: 100px;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.box-borrowed:hover {
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+.columns {
+    display: flex;
+    align-items: center;
+}
+
+.text-head {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.text-element {
+    font-size: 20px;
+    text-align: center;
+}
+
+.text-title {
+    font-size: 30px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.info-shadows {
+    box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
+    padding: 15px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ลดขนาด padding ในหน้าจอเล็ก */
+@media screen and (max-width: 480px) {
+    .column {
+        padding: 0.25rem !important;
+    }
+}
+
+.columns.is-fixed {
+    width: 100%;
+}
+  
+.column.is-fixed {
+    flex: 1 !important;
+    width: 20% !important;
+}
+
+/* ปรับขนาดตัวอักษรสำหรับหน้าจอเล็ก */
+@media screen and (max-width: 768px) {
+    .text-element {
+      font-size: 10px;
+    }
+    .info-shadows {
+      padding: 5px;
+    }
+
+    .text-title {
+        font-size: 30px;
+        text-align: left;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+}

@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="static/css/itemlist.css">
+{% endblock %}
+
+{% block content %}
+<div class="add-something">
+    <form id="search-form" class="box" method="POST" action="/itemlist">
+        <div class="columns is-justify-content-center is-align-items-center">
+            <div class="column is-5">
+                <label class="label Borrow">Borrow</label>
+                <input id="borrow_item" class="input" type="text" name="borrow_item"
+                    placeholder="what you want to borrow?" oninput="fetchSuggestions(this.value)" />
+                <div id="suggestions" class="suggestions-box" hidden></div>
+            </div>
+
+            <div class="block-borrow-search ml-3" style="width: 10%;">
+                <label class="label amount">Amount</label>
+                <input id="amount" type="number" class="input" min="1" placeholder="0">
+            </div>
+
+            <div class="column is-2">
+                <label class="label category">Category</label>
+                <input id="category" list="options" class="input" placeholder="Category" />
+                <datalist id="options">
+                    <option value="Stationery">
+                    <option value="Filing Supplies">
+                    <option value="Paper & Consumables">
+                    <option value="Office Equipment">
+                    <option value="IT & Electronics">
+                    <option value="General Office Supplies">
+                    <option value="Office Furniture">
+                </datalist>
+            </div>
+
+            <div class="column is-2">
+                <label class="label start_date">Start</label>
+                <input id="start_date" class="input" type="date" lang="en-GB" />
+            </div>
+
+            <div class="block-borrow-search ml-3" style="width: 15%;">
+                <label class="label end_date">End</label>
+                <input id="end_date" class="input" type="date" lang="en-GB" />
+            </div>
+        </div>
+        <div class="centerBlock">
+            <button type="submit" class="button search-borrow-things" style="width: 40%;">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="mt-5">
+    <p class="Item-found">Item List</p>
+    <div id="item-list-container"></div> <!-- Container for dynamically loaded items -->
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function fetchSuggestions(query) {
+        const suggestionBox = document.getElementById('suggestions');
+        suggestionBox.innerHTML = '';
+        if (query) {
+            const response = await fetch(`/autocomplete?query=${query}`);
+            const data = await response.json();
+            data.suggestions.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.textContent = item.name;
+                div.onclick = () => selectSuggestion(item.name);
+                suggestionBox.appendChild(div);
+            });
+        }
+    }
+
+    function selectSuggestion(value) {
+        document.getElementById('borrow_item').value = value;
+        document.getElementById('suggestions').innerHTML = '';
+    }
+
+    // Prevent form submission and perform AJAX call
+    document.getElementById('search-form').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent form submission
+        await fetchItems(); // Fetch items based on form values
+    });
+
+    // Fetch items using AJAX
+    async function fetchItems() {
+        const formData = new FormData(document.getElementById('search-form'));
+        const queryParams = new URLSearchParams({
+            borrow_item: formData.get("borrow_item"),
+            amount: formData.get("amount"),
+            category: formData.get("category"),
+            start_date: formData.get("start_date"),
+            end_date: formData.get("end_date")
+        }).toString();
+
+        const response = await fetch(`/api/itemlist?${queryParams}`);
+        const items = await response.json();
+
+        const container = document.getElementById('item-list-container');
+        container.innerHTML = '';  // Clear existing items
+
+        let row = null;
+        items.forEach((item, index) => {
+            // Start a new row every 4 items
+            if (index % 4 === 0) {
+                row = document.createElement('div');
+                row.className = 'columns';
+                container.appendChild(row);
+            }
+
+            // Create the card for each item
+            const reserveUrl = `/reserve/${encodeURIComponent(item.category)}`;
+            const card = document.createElement('div');
+            card.className = 'column is-one-quarter-desktop is-12-mobile is-flex is-justify-content-center is-align-items-center';
+            card.innerHTML = `
+                <div class="card">
+                    ${item.is_new ? '<div class="icon-card">NEW</div>' : ''}
+                    <p class="card-header-title is-centered">${item.category}</p>
+                    <div class="card-image centerBlock">
+                        <figure class="image is-128x128">
+                            <img src="${item.image_url}" title="${item.category}" />
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <p class="centerBlock"><b>Available: ${item.available_count} pieces</b></p>
+                    </div>
+                    <footer class="card-footer">
+                        <a href="${reserveUrl}" class="card-footer-item">Reserve</a>
+                    </footer>
+                </div>
+            `;
+            // Append the card to the current row
+            row.appendChild(card);
+        });
+    }
+
+    // Trigger fetchItems when page loads
+    document.addEventListener("DOMContentLoaded", fetchItems);
+</script>
+{% endblock %}

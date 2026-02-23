@@ -1,0 +1,384 @@
+.box-reserve {
+    /* width: 100%;
+    height: 600px; */
+    /* margin-top: 30px;
+    margin-bottom: 30px; */
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    
+}
+
+.img-item {
+    width: 150px;
+    height: 150px;
+    /* margin-bottom: 10px; */
+    border-radius: 10px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    text-align: center;
+}
+
+.text-element {
+    font-size: 20px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.text-title {
+    font-size: 30px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.submit-button {
+    border-color: #78A3FF;
+    background-color: #78A3FF;
+}
+
+.cancle-button {
+    border-color: #ffffff;
+    background-color: #ffffff;
+}
+
+.button {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* .info-prove-form { */
+    /* padding-left: 20%; */
+/* } */
+
+.container{
+    margin-top: 70px;
+}
+
+
+.big-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    /* padding: 15px 25px; */
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    /* width: 1200px; */
+    /* max-height: 650px; */
+    margin: auto;
+    background-color: #fff;
+    max-width: 100%;  
+    width: 75vw;  
+    overflow: hidden;
+}
+
+.container {
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.re-butt{
+    /* margin-top: 5px; */
+    color: black;
+    background-color: #78A3FF;
+    width:  100%;
+}
+
+.sbt{
+    justify-content: space-between;
+}
+
+.dot{
+    width: 30px;  
+    height: 30px;
+    vertical-align: middle;
+    margin-right: 5px;
+    
+}
+
+.dot-font{
+    font-size:70%;
+    font-weight: 500;
+    padding-left: 6px;
+    /* text-align: center; */
+    display: block;
+    width: 100%;
+}
+
+.dot-font2{
+    font-size:80%;
+    font-weight: 600;
+    /* padding-top: 1   0px; */
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+.dot-box {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 3px; 
+    margin-left: 5px;
+    /* padding-bottom: 20px; */
+    
+}
+
+.dot-box .column {
+    display: flex;
+    align-items: center; 
+}
+
+.dot-big-box{
+    
+    word-wrap: break-word; 
+    /* text-align: center; */
+}
+
+.dot-big-box img {
+    display: block;
+    margin: auto; 
+    padding: 0;
+}
+
+td{
+    /* border-bottom: 1px solid black;
+    border-top:1px solid black;   */
+    padding: 10px;
+    text-align: center;
+    
+    /* border: 5px solid black; */
+}
+
+th{
+    border: 1px solid black;
+    padding: 10px;
+    text-align: center;
+    background-color: #93b9dd;
+}
+
+abbr {
+    text-decoration: none;
+    border-bottom: none;  
+    /* font-size: 1.5em; */
+}
+
+
+.arrow{
+    width:25px;
+    height: 25px;   
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+}
+
+.month-th{
+    display: flex;
+    justify-content: center;
+}
+
+.wrap-cal{
+    width: 450px;
+    border-radius: 10px;
+    /* border: 5px solid black; */
+    position: sticky;
+    z-index: 10;
+    top: 0;
+}
+
+.wrap-cal header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 30px 10px;
+}
+
+header .curr-date{
+    font-size: 1.9rem;
+    font-weight: 500;
+}
+
+header .icons span{
+    width: 80px;
+    height: 50px;   
+    /* margin: 0 1px; */
+    text-align: center;
+    line-height: 40px;
+    cursor: pointer;
+    border-radius: 20%;
+    /* background: #f2f2f2; */
+}
+header .icons span:hover{
+    background: #f2f2f2;
+}
+
+/* header .icons span:last-child{
+    margin-right: -5px;
+} */
+
+.calendar{
+    padding: 20px;
+}
+
+.calendar ul{
+    display: flex;
+    list-style: none;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.calendar .days li::before{
+    position: absolute;
+    content:"";
+    height: 50px;
+    width: 50px;
+    top:50%;
+    left: 50%;
+    border-radius: 30%;
+    transform: translate(-50%,-50%);
+    /* background-color: #f2f2f2; */
+    z-index: -1;
+}
+
+.calendar ul li{
+    width: calc(100%/7);
+    position: relative;
+}
+
+.calendar .weeks li{
+    font-weight: 500;
+    font-size: 85%;
+}
+
+.calendar .days{
+    margin-bottom: 10px;
+}
+
+.calendar .days li{
+    margin-top: 25px;
+    cursor: pointer;
+    z-index: 1;
+    font-size: 85%;
+}
+
+.days li:hover::before{
+    background: #f2f2f2;
+    width: 50px;
+}
+
+.days li.active::before{
+    width: 50px;
+    height: 50px;
+    background: #565656;
+}
+
+.days li.inactive{
+    color: #aaa;
+    /* cursor: none; */
+    pointer-events: none;
+}
+
+.days li.disabled {
+    /* color: #ccc; */
+    pointer-events: none;
+}
+
+
+.days li.active{
+    color: #fff;
+}
+
+.days li.selected::before {
+    background-color: #78A3FF;
+    color: #fffF;
+    /* height: 40px;
+    width: 30px;
+    top:50%;
+    left: 50%;
+    border-radius: 30%; */
+}
+
+    
+.days li.reserved::before{
+    color:#fff ; 
+    background: #78A3FF;
+    font-weight: bold;
+    max-height:min-height;
+}
+
+.days li.reserved:hover::before{
+    color:#fff ; 
+    background: #d8e2ff; 
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+}
+
+.margin-info{
+    margin-bottom: 15px;
+}
+
+/* .mo-s{
+    justify-content: center;
+    text-align: center;
+} */
+
+
+@media screen and (max-width: 768px) {
+    .big-box {
+        flex-direction: column; 
+        /* align-items: center;  */
+        justify-content: center;
+    }
+
+    .dot-big-box {
+        order: 1;
+        width: 100%; 
+        /* align-items: center; */
+        justify-content: center;
+    }
+
+    .wrap-cal {
+        order: 2;   
+        width: 100%;    
+    }
+
+    .dot-big-box img {
+        display: block;
+        margin: 0 auto; 
+        max-width: 100%;
+        height: auto;
+        padding: 0;
+    }
+
+    /* .dot-big-box .columns {
+        justify-content: center;
+    } */
+
+    .dot-font{
+        text-align: center;
+        display: block;
+        width: 100%;
+    }
+
+    .dot-font2 {
+        display: block;
+        width: 100%;
+    }
+
+    
+    .calendar .weeks li{
+        font-weight: 500;
+        font-size: 70%;
+    }
+
+    .calendar .days li{
+        font-weight: 500;
+        font-size: 70%;
+    }
+
+
+}

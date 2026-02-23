@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="/static/css/log.css" rel="stylesheet">
+
+    <div class="container" style="margin-top: 30px;">
+        <div class="text-title">Returned Borrower</div>
+            <div class="head-table">
+                <!-- head table -->
+                <div class="columns">
+                    <div class="column" style="width: 300px;">
+                        <div>
+                            <div class="text-head">Borrower</div>
+                        </div>
+                    </div>
+                    <div class="column" style="width: 50px;">
+                        <div>
+                            <div class="text-head3">Item</div>
+                        </div>
+                    </div>
+                    <div class="column" style="width: 50px;">
+                        <div>
+                            <div class="text-head2">Amount</div>
+                        </div>
+                    </div>
+                    <div class="column" style="width: 300px;">
+                        <div>
+                            <div class="text-head5">Certifier</div>
+                        </div>
+                    </div>
+                    <div class="column" style="width: 300px;">
+                        <div>
+                            <div class="text-head4">Date</div>
+                        </div>
+                    </div>
+                    <div class="column" style="width: 300px;">
+                        <div class="text-head6">Status</div>
+                    </div>
+                </div>
+            </div>
+
+        {% for data in borrow_data %}
+        <div class="box-log" style="margin-bottom: 20px;">
+            <div class="columns is-fixed">
+                <!-- ข้อมูลชื่อ -->
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-element">{{ data.name }}</div>
+                    </div>
+                </div>
+                
+                <!-- ข้อมูลรายการสิ่งของและจำนวน แบบหลาย row -->
+                <div class="column is-fixed" style="flex-grow: 2;">
+                    <div class="item-container" style="display: flex; flex-direction: column;">
+                        {% for item_name, count in data.item_counts.items() %}
+                        <div class="item-row" style="display: flex; margin-bottom: 5px;">
+                            <div class="info-shadows" style="flex: 2; margin-right: 10px;">
+                                <div class="text-element">{{ item_name }}</div>
+                            </div>
+                            <div class="info-shadows" style="flex: 1;">
+                                <div class="text-element">{{ count }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- ข้อมูล verifier -->
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-element">{{ data.verifier }}</div>
+                    </div>
+                </div>
+                
+                <!-- ข้อมูลวันที่ -->
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-element">{{ data.borrow_date }}<br>{{ data.return_date }}</div>
+                    </div>
+                </div>
+                
+                <!-- ข้อมูลสถานะ -->
+                <div class="column is-fixed">
+                    <div class="text-element">{{ data.status }}</div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}

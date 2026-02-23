@@ -1,0 +1,166 @@
+.head-table {
+    width: 1340px;
+    height: 80px;
+    color: #000000;
+    margin-top: 30px;
+    background-color: #dddddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.box-log {
+    width: 100%;
+    height: auto;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.box-log:hover {
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+.columns {
+    display: flex;
+    align-items: center;
+}
+
+.text-head {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+    /* padding-right: 1 */
+    margin-left: 90px;
+}
+
+.text-head2{
+    /* box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15); */
+    font-size: 18px;
+    /* text-align: center; */
+    font-weight: bold;
+    /* padding-right: 5px; */
+    /* padding: 20px; */
+    width: auto;
+    /* vertical-align: auto; */
+    margin-left: 18px;
+}
+
+.text-head3{
+    font-size: 18px;
+    text-align: center;
+    font-weight:bold;
+    padding-left: 15px;
+    margin-left: 95px;
+    /* padding: 0; */
+}
+
+.text-head4{
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 110px;
+    /* padding: 0; */
+    width: auto;
+    vertical-align: auto;
+}
+
+.text-head5{
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 160px;
+    /* padding: 0; */
+    width: auto;
+    vertical-align: auto;
+}
+
+.text-head6{
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+    /* padding-right: 1 */
+    /* margin-left: 90px; */
+}
+
+.text-element {
+    font-size: 20px;
+    text-align: center;
+}
+
+.text-title {
+    font-size: 30px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.info-shadows {
+    box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
+    padding-right: 20px; 
+    display: block;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+/* ลดขนาด padding ในหน้าจอเล็ก */
+@media screen and (max-width: 480px) {
+    .column {
+        padding: 0.25rem !important;
+    }
+}
+
+.columns.is-fixed {
+    width: 100%;
+}
+  
+.column.is-fixed {
+    flex: 1 !important;
+    width: 20% !important;
+}
+
+/* ปรับขนาดตัวอักษรสำหรับหน้าจอเล็ก */
+@media screen and (max-width: 768px) {
+    .text-element {
+      font-size: 10px;
+    }
+    .info-shadows {
+      padding: 5px;
+    }
+
+    .text-title {
+        font-size: 30px;
+        text-align: left;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    .columns.is-fixed {
+        grid-template-columns: 1fr;
+        gap: 5px;
+    }
+    
+    .head-table {
+        display: none;
+    }
+    
+    .column.is-fixed {
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .column.is-fixed:before {
+        content: attr(data-label);
+        font-weight: bold;
+        margin-right: 10px;
+    }
+}
+

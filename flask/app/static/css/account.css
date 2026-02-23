@@ -1,0 +1,142 @@
+.box-profile, .box-history {
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding-top: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+table {
+    width: 100%;
+    margin-top: 30px;
+}
+
+tr {
+    font-size: 25px;
+    text-align: center;
+}
+
+.text-profile {
+    font-size: 25px;
+}
+
+.text-info {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.text-title {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.img-profile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-profile img {
+    object-fit: cover;  
+    width: 200px; 
+    height: 200px;  
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 40px;
+}
+  
+/* Media queries */
+@media screen and (max-width: 767px) {
+    .container {
+      padding: 10px;
+      font-size: 16px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .box-profile {
+        width: 90%;
+        margin-top: 20px;
+        margin-left: 20px;
+        margin-right: 60px;
+        margin-bottom: -20px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .box-history {
+        width: 90%;
+        margin-bottom: 30px;
+        margin-left: 18px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+    }
+    
+    .img-profile {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 15px;
+    }
+    
+    .text-title {
+      font-size: 22px;
+      text-align: left !important;
+      margin-left: 20px;
+    }
+    
+    .text-profile {
+      font-size: 16px;
+    }
+    
+    .text-info {
+        font-size: 15px;
+        font-weight: bold;
+    }
+
+    /* Hide desktop table */
+    .desktop-table {
+      display: none;
+    }
+    
+    /* Show mobile table */
+    .mobile-table {
+      display: block;
+      overflow-x: hidden;
+    }
+    
+    .days-left {
+      font-size: 14px !important;
+    }
+    
+    .box-history {
+      padding: 10px;
+      overflow-x: hidden;
+    }
+    
+    .mobile-value {
+      font-size: 14px;
+    }
+    
+    .mobile-label {
+      font-size: 14px;
+    }
+    
+    .column {
+      padding: 0.5rem;
+    }
+}
+
+

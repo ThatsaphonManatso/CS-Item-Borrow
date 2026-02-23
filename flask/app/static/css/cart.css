@@ -1,0 +1,319 @@
+.head-table {
+    width: 100%;
+    height: 60px;
+    color: #000000;
+    margin-top: 30px;
+    background-color: #dddddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.box-cart {
+    width: 100%;
+    height: 120px;
+    margin-top: 30px;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.box-cart:hover {
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+.columns {
+    display: flex;
+    align-items: center;
+}
+
+.text-head {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.text-element {
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.text-title {
+    font-size: 30px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.submit-button, .itemlist-button {
+    float: right;
+    border-radius: 10px;
+    width: 150px;
+    height: 50px;
+    border-color: #78A3FF;
+    background-color: #78A3FF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+.dropdown-menu {
+    list-style: none;  
+    width: 250px;
+    height: auto;
+    display: none;
+    border: 1px solid #ccc;
+    background-color: white;
+    padding: 10px;
+    top: 100%;
+    /* เลื่อนลงมาจากปุ่ม */
+    left: 57%;
+    /* ตั้งอยู่ที่กลาง */
+    transform: translateX(-50%);
+    /* ให้แนวกลางของ dropdown อยู่ตรงกลาง */
+    border-radius: 10px;
+}
+
+.dropdown-menu.is-active {
+    display: block;
+}
+
+.dropdown-button {
+    width: 280px;
+    height: 80px;
+    padding: 10px 20px;
+    border-color: #bcbcbc;
+    background-color: #bcbcbc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-left: 40px;
+    cursor: pointer;
+}
+
+.dropdown {
+    width: 100%;
+    position: relative;
+    display: inline-block;
+    text-align: center;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    border-bottom: 2px solid #6c6c6c;
+    cursor: pointer;
+}
+
+.dropdown-menu li:hover {
+    background-color: #f0f0f0;
+}
+
+.img-item {
+    width: 90px;
+    height: 90px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-shadows {
+    box-shadow: 5px 0 4px -4px rgba(0, 0, 0, 0.15);
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.action {
+    width: 40px;
+    height: 40px;
+}
+
+/* ลดขนาด padding ในหน้าจอเล็ก */
+@media screen and (max-width: 480px) {
+    .column {
+        padding: 0.25rem !important;
+    }
+
+    .img-item {
+        width: 10px;
+        height: 10px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .info-shadows {
+        box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
+        padding: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .text-head {
+        font-size: 12px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    .text-element {
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .action {
+        width: 20px;
+        height: 20px;
+        gap: 10px;
+    }
+
+    .dropdown-button {
+        width: 200px;
+        height: 80px;
+        padding: 10px 20px;
+        border-color: #bcbcbc;
+        background-color: #bcbcbc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .dropdown-button {
+        width: 150px;
+        height: 30px;
+        border-color: #bcbcbc;
+        background-color: #bcbcbc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: 10px;
+        margin-left: 5px;
+    }
+
+    .box-cart {
+        width: 100%;
+        height: 80px;
+        margin-top: 30px;
+        padding: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+.columns.is-fixed {
+    width: 100%;
+}
+
+/* .column.is-fixed {
+    flex: 1 !important;
+    width: 25% !important;
+} */
+
+.column.is-fixed {
+    flex: 1 !important;
+    width: 20% !important;
+}
+
+
+/* ปรับขนาดตัวอักษรสำหรับหน้าจอเล็ก */
+@media screen and (max-width: 768px) {
+    .column {
+        padding: 0.25rem !important;
+    }
+
+    .img-item {
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .info-shadows {
+        box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
+        /* padding-left: -100px; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .text-head {
+        font-size: 12px;
+        text-align: center;
+        font-weight: bold;
+    }
+    
+    .text-element {
+        font-size: 10px;
+        text-align: center;
+    }
+
+    .text-title {
+        font-size: 30px;
+        text-align: left;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+
+    .action {
+        width: 20px;
+        height: 20px;
+        gap: 10px;
+    }
+
+    .dropdown-button {
+        width: 200px;
+        height: 40px;
+        border-color: #bcbcbc;
+        background-color: #bcbcbc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        cursor: pointer;
+        margin-top: -7px;
+        margin-left: 5px;
+    }
+
+    .dropdown-menu {
+        list-style: none;  
+        width: 200px;
+        height: auto;
+        display: none;
+        border: 1px solid #ccc;
+        background-color: white;
+        padding: 10px;
+        top: 100%;
+        /* เลื่อนลงมาจากปุ่ม */
+        left: 50%;
+        /* ตั้งอยู่ที่กลาง */
+        transform: translateX(-50%);
+        /* ให้แนวกลางของ dropdown อยู่ตรงกลาง */
+        border-radius: 10px;
+    }
+
+    .submit-button, .itemlist-button {
+        float: right;
+        border-radius: 10px;
+        width: 100px;
+        height: 30px;
+        border-color: #78A3FF;
+        background-color: #78A3FF;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin-right: 10px;
+        margin-top: 20px;
+    }
+}

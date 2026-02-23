@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+<link href="/static/css/history_approve.css" rel="stylesheet">
+<div class="container" style="margin-top: 30px;">
+
+    <p class="text-title">Awaiting Approval</p>
+
+    <!-- Approval Section -->
+    <div id="grid-container">
+        <div class="columns is-multiline" style="margin-top: 2px; margin-bottom: 10px;">
+            {% for i in borrow_req_pen %}
+            <div class="column is-half-desktop is-10-tablet is-10-mobile">
+                <!-- Clickable Box -->
+                <div class="button box-approve" id="info-{{ i.usr_id }}">
+                    <div class="columns column is-full is-mobile">
+                        <div class="column is-justify-content-left" style="display: flex;">
+                            <img class="ico-down" id="togg" src="static/ico/ico-down.png" alt="clickdown">
+                            <span><p class="text-approve">Request : </p></span>
+                            <span><p class="text-approve-name">&nbsp;&nbsp;{{ i.name }}</p></span>
+                        </div>
+                        <div class="column is-justify-content-right" style="display: flex;">
+                            <img class="status" src="{{ i.status_img }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden Info Content -->
+                <div class="info-content" id="info-box-{{ i.usr_id }}" style="display: none;">
+                    <div class="columns is-multiline" style="margin-top: 2px; margin-bottom: 5px;">
+                        {% for item_name, count in i.item_counts.items() %}
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">{{ item_name }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">Amount : {{ count }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">From {{ i.borrow_date }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile">
+                            <p class="text-approve" style="font-size: 15px;">To {{ i.return_date }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Approve/Cancel Buttons -->
+                    <div class="columns is-multiline" style="margin-top: 2px; margin-bottom: 2px; display: flex; justify-content: center; gap: 20px;">
+                        <form method="POST" id="appr" action="/approve_form" style="display: flex; flex-direction: row; gap: 10px;">
+                            {{ form.hidden_tag() }}
+                            <input type="hidden" id="id" name="id" value="{{ i.usr_id }}">
+                            <input type="hidden" id="status" name="status" value="">
+                            <button type="submit" class="button-approve" data-boxid="{{ i.usr_id }}" name="action" value="approve">Approve</button>
+                            <button type="submit" class="button-cancel" data-boxid="{{ i.usr_id }}" name="action" value="cancel">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <p class="text-title">Approved</p>
+
+    <!-- Approval Section -->
+    <div id="grid-container">
+        <div class="columns is-multiline" style="margin-top: 2px; margin-bottom: 10px;">
+            {% for i in borrow_req_app %}
+            <div class="column is-half-desktop is-10-tablet is-10-mobile">
+                <!-- Clickable Box -->
+                <div class="button box-approve" id="info-{{ i.usr_id }}">
+                    <div class="columns column is-full is-mobile">
+                        <div class="column is-justify-content-left" style="display: flex;">
+                            <img class="ico-down" id="togg" src="static/ico/ico-down.png" alt="clickdown">
+                            <span><p class="text-approve">Request : </p></span>
+                            <span><p class="text-approve-name">&nbsp;&nbsp;{{ i.name }}</p></span>
+                        </div>
+                        <div class="column is-justify-content-right" style="display: flex;">
+                            <img class="status" src="{{ i.status_img }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden Info Content -->
+                <div class="info-content" id="info-box-{{ i.usr_id }}" style="display: none;">
+                    <div class="columns is-multiline" style="margin-top: 2px; margin-bottom: 2px;">
+                        {% for item_name, count in i.item_counts.items() %}
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">{{ item_name }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">Amount : {{ count }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile info-shadows">
+                            <p class="text-approve" style="font-size: 15px;">From {{ i.borrow_date }}</p>
+                        </div>
+                        <div class="column is-3-desktop is-6-tablet is-half-mobile">
+                            <p class="text-approve" style="font-size: 15px;">To {{ i.return_date }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+</div>
+
+<script>
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    $(document).ready(function () {
+        let message = getQueryParam("message");
+        if (message) {
+            Swal.fire({
+                title: "Success",
+                text: message,
+                icon: "success",
+                confirmButtonText: "OK"
+            });
+
+            // ลบข้อความออกจาก URL (history.replaceState)
+            const newUrl = window.location.origin + window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
+        }
+
+        // Toggle Info Box
+        $(".box-approve").click(function () {
+            var boxId = $(this).attr("id").replace("info-", ""); // Extract ID
+            var infoContent = $("#info-box-" + boxId); // Find matching info box
+
+            if (infoContent.length > 0) {
+                infoContent.slideToggle();
+                $(this).find("#togg").toggleClass("ico-up");
+            } else {
+                console.error("No matching info-content found for: " + boxId);
+            }
+        });
+    
+        // แยก event handler สำหรับปุ่ม approve และ cancel
+        $(document).on("click", ".button-approve", function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            var button = $(this);
+            var action = button.val();
+            var boxId = button.data("boxid");
+            var status = button.closest("#appr").find("#status")
+            status.val("Approve")
+
+            Swal.fire({
+                title: `Confirm ${action}?`,
+                text: `Are you sure you want to ${action} this request?`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest("#appr").submit();
+                    // moveToApproved(boxId);
+                }
+            });
+        }); 
+
+        $(document).on("click", ".button-cancel", function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            var button = $(this);
+            var action = button.val();
+            var boxId = button.data("boxid");
+            var status = button.closest("#appr").find("#status")
+            status.val("Reject")
+
+            Swal.fire({
+                title: `Confirm ${action}?`,
+                text: `Are you sure you want to ${action} this request?`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.closest("#appr").submit();
+                    // moveToApproved(boxId);
+                }
+            });
+        }); 
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="/static/css/reserve.css" rel="stylesheet">
+<div class="container is-justify-content-center">
+
+    <div class="big-box is-justify-content-center">
+        <div class="column dot-big-box is-justify-content-center is-one-third">
+
+            <div class="columns is-centered">
+                <span class="dot-font2"><b>{{ item.category }}</b></span>
+            </div>
+
+            <div class="columns is-centered">
+                <img src="{{ item.image_url }}" alt="item" style="width: auto; height: 200px;">
+            </div>
+
+            <div class="columns is-centered sbt">
+                <span class="dot-font"><b>Available : {{ item.available_count }}</b></span>
+            </div>
+
+            <form id="reserve-form">
+                <input type="hidden" name="category_name" value="{{ item.category }}">
+                <input type="hidden" name="image_url" value="{{ item.image_url }}">
+                <input type="hidden" name="available_count" value="{{ item.available_count }}">
+
+                <div class="column field is-centered sbt">
+                    <span class="dot-font">Amount :</span>
+                    <div class="control" style="width: 100%;">
+                        <input type="number" class="input" id="item_quantity" name="item_quantity" min="1" required>
+                    </div>
+                </div>
+
+                <div class="column">
+                    <label class="label start_date">Start</label>
+                    <input id="start_date" class="input margin-info" type="date" lang="en-GB" name="start_date" value="">
+                </div>
+
+                <div class="block-borrow-search column">
+                    <label class="label end_date">End</label>
+                    <input id="end_date" class="input" type="date" lang="en-GB" name="end_date" value="">
+                </div>
+
+                <div class="column is-centered sbt">
+                    <button type="submit" class="button re-butt">Add to cart</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="column wrap-cal"> <!--Calendar-->
+            <header>
+                <div class="icons">
+                    <span id="prev" class="material-symbols-rounded"> ⇦ </span>
+                </div>
+                <p class="current-date"></p>
+                <div class="icons">
+                    <span id="next" class="material-symbols-rounded"> ⇨ </span>
+                </div>
+            </header>
+
+            <div class="calendar">
+                <ul class="weeks">
+                    <li><abbr title="Sunday">Sun</abbr></li>
+                    <li><abbr title="Monday">Mon</abbr></li>
+                    <li><abbr title="Tuesday">Tue</abbr></li>
+                    <li><abbr title="Wednesday">Wed</abbr></li>
+                    <li><abbr title="Thursday">Thu</abbr></li>
+                    <li><abbr title="Friday">Fri</abbr></li>
+                    <li><abbr title="Saturday">Sat</abbr></li>
+                </ul>
+
+                <ul class="days"></ul>
+            </div>
+
+            <div class="columns dot-box is-centered">
+                <div class="column is-narrow">
+                    <img class="dot" src="/static/ico/round_0f0.png">
+                    <span class="dot-font">All items can reserve</span>
+                </div>
+                <div class="column is-narrow">
+                    <img class="dot" src="/static/ico/round_ff0.png">
+                    <span class="dot-font">Some items can reserve</span>
+                </div>
+                <div class="column is-narrow">
+                    <img class="dot" src="/static/ico/round_f00.png">
+                    <span class="dot-font">Can not reserve</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script defer>
+    document.addEventListener("DOMContentLoaded", () => {
+        const storedItem = sessionStorage.getItem("selectedItem"); // This is correct for the edit action
+        sessionStorage.removeItem("selectedItem");
+        if (storedItem) {
+            const item = JSON.parse(storedItem);
+            document.querySelector('input[name="category_name"]').value = item.item;
+            document.querySelector('input[name="item_quantity"]').value = item.quantity;
+            document.querySelector('input[name="start_date"]').value = item.dateFT.from.split('T')[0];
+            document.querySelector('input[name="end_date"]').value = item.dateFT.to.split('T')[0];
+        }
+
+        const currdate = document.querySelector(".current-date");
+        const daysTag = document.querySelector(".days");
+        const prevNextIcon = document.querySelectorAll(".icons span");
+        const startDateInput = document.getElementById("start_date");
+        const endDateInput = document.getElementById("end_date");
+
+        let date = new Date(),
+            currYear = date.getFullYear(),
+            currMonth = date.getMonth();
+
+        const months = ["January", "February", "March", "April", "May", "June", "July",
+            "August", "September", "October", "November", "December"];
+
+        let selectedDates = [];  // Array to store the selected dates
+
+        const reserveForm = document.getElementById('reserve-form');
+        reserveForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(reserveForm);
+            const formDataObject = {};
+            formData.forEach((value, key) => {
+                formDataObject[key] = value;
+            });
+
+            let cartItems = JSON.parse(sessionStorage.getItem('myObjectListKey')) || [];
+
+            const newItem = {
+                item: formDataObject.category_name,
+                quantity: formDataObject.item_quantity,
+                dateFT: {
+                    from: formDataObject.start_date + "T00:00:00",
+                    to: formDataObject.end_date + "T00:00:00",
+                },
+                image_url: formDataObject.image_url,
+            };
+
+            cartItems.push(newItem);
+            sessionStorage.setItem('myObjectListKey', JSON.stringify(cartItems));
+
+            window.location.href = '/cart';
+        });
+
+        const renderCalendar = () => {
+            let firstDayofMonth = new Date(currYear, currMonth, 1).getDay(),
+                lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate(),
+                lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay(),
+                lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate();
+
+            let liTag = "";
+
+            // Previous month's days
+            for (let i = firstDayofMonth; i > 0; i--) {
+                liTag += `<li class="inactive">${lastDateofLastMonth - i + 1}</li>`;
+            }
+
+            // Current month's days
+            for (let i = 1; i <= lastDateofMonth; i++) {
+                let isToday = i === date.getDate() && currMonth === new Date().getMonth()
+                    && currYear === new Date().getFullYear() ? "active" : "";
+
+                let isPast = new Date(currYear, currMonth, i) < new Date(new Date().setHours(0, 0, 0, 0)) ? "disabled" : "";
+
+                let isSelected = "";
+                if (selectedDates.length > 0) {
+                    const currentDate = new Date(currYear, currMonth, i);
+                    if (selectedDates.length === 2) {
+                        const startDate = new Date(selectedDates[0]);
+                        const endDate = new Date(selectedDates[1]);
+                        if (currentDate >= startDate && currentDate <= endDate) {
+                            isSelected = "selected";
+                        }
+                    } else if (selectedDates.length === 1) {
+                        const selectedDate = new Date(selectedDates[0]);
+                        if (currentDate.getTime() === selectedDate.getTime()) {
+                            isSelected = "selected";
+                        }
+                    }
+                }
+
+                liTag += `<li class="${isToday} ${isSelected} ${isPast}" data-day="${i}" data-month="${currMonth}" data-year="${currYear}">${i}</li>`;
+            }
+
+            // Next month's days
+            for (let i = lastDayofMonth + 1, nextDay = 1; i <= 6; i++, nextDay++) {
+                liTag += `<li class="inactive">${nextDay}</li>`;
+            }
+
+            currdate.innerText = `${months[currMonth]} ${currYear}`;
+            daysTag.innerHTML = liTag;
+
+            // Add click event to days
+            document.querySelectorAll(".days li:not(.inactive)").forEach(day => {
+                day.addEventListener("click", () => {
+                    const selectedDay = parseInt(day.dataset.day);
+                    const selectedMonth = parseInt(day.dataset.month);
+                    const selectedYear = parseInt(day.dataset.year);
+
+                    toggleDateSelection(selectedDay, selectedMonth, selectedYear);
+                });
+            });
+        };
+
+        const toggleDateSelection = (day, month, year) => {
+            const selectedDate = new Date(year, month, day);
+
+            // Remove date from array if already selected
+            const index = selectedDates.findIndex(date => date.getTime() === selectedDate.getTime());
+            if (index !== -1) {
+                selectedDates.splice(index, 1);
+            } else {
+                if (selectedDates.length >= 2) {
+                    return;
+                }
+                selectedDates.push(selectedDate);
+            }
+
+            // Sort dates (Start -> End)
+            selectedDates.sort((a, b) => a - b);
+
+            updateDateInputs();
+            renderCalendar();
+        };
+
+        const updateDateInputs = () => {
+            const formatDate = (date) => {
+                const d = new Date(date);
+                let month = '' + (d.getMonth() + 1);
+                let day = '' + d.getDate();
+                const year = d.getFullYear();
+
+                if (month.length < 2) month = '0' + month;
+                if (day.length < 2) day = '0' + day;
+
+                return [year, month, day].join('-');
+            };
+
+            startDateInput.value = selectedDates.length > 0 ? formatDate(selectedDates[0]) : "";
+            endDateInput.value = selectedDates.length > 1 ? formatDate(selectedDates[1]) : "";
+        };
+
+        renderCalendar();
+
+        prevNextIcon.forEach(icon => {
+            icon.addEventListener("click", () => {
+                currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
+
+                if (currMonth < 0 || currMonth > 11) {
+                    currYear = currMonth < 0 ? currYear - 1 : currYear + 1;
+                    currMonth = (currMonth + 12) % 12;
+                }
+
+                renderCalendar();
+            });
+        });
+
+        startDateInput.addEventListener("change", function () {
+            if (this.value) {
+                const [year, month, day] = this.value.split('-').map(Number);
+                const newDate = new Date(year, month - 1, day);
+
+                if (selectedDates.length === 0) {
+                    selectedDates = [newDate];
+                } else if (selectedDates.length === 1) {
+                    if (newDate < selectedDates[0]) {
+                        selectedDates.unshift(newDate);
+                    } else {
+                        selectedDates[0] = newDate;
+                    }
+                } else {
+                    selectedDates[0] = newDate;
+                }
+
+                updateDateInputs();
+                renderCalendar();
+            }
+        });
+
+        endDateInput.addEventListener("change", function () {
+            if (this.value) {
+                const [year, month, day] = this.value.split('-').map(Number);
+                const newDate = new Date(year, month - 1, day);
+
+                if (selectedDates.length === 0) {
+                    selectedDates = [newDate];
+                } else if (selectedDates.length === 1) {
+                    if (newDate > selectedDates[0]) {
+                        selectedDates.push(newDate);
+                    } else {
+                        selectedDates.unshift(newDate);
+                    }
+                } else {
+                    selectedDates[1] = newDate;
+                }
+
+                renderCalendar();
+            }
+        });
+
+    });
+
+</script>
+
+{% endblock %}

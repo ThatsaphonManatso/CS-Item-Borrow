@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% block content %}
+
+<link href="/static/css/cart.css" rel="stylesheet">
+<div class="container" style="margin-bottom: 15px;">
+    <div class="column is-12-desktop">
+        <div class="text-title" style="margin-top: 30px;">Cart</div>
+        <div class="head-table">
+            <div class="columns is-fixed">
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-head">Preview</div>
+                    </div>
+                </div>
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-head">Item</div>
+                    </div>
+                </div>
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-head">Amount</div>
+                    </div>
+                </div>
+                <div class="column is-fixed">
+                    <div class="info-shadows">
+                        <div class="text-head">Date</div>
+                    </div>
+                </div>
+                <div class="column is-fixed">
+                    <div class="text-head">Delete / Edit</div>
+                </div>
+            </div>
+        </div>
+        <div id="cartItemsContainer">
+
+        </div>
+    </div>
+    <div class="columns column is-12">
+        <div class="dropdown column is-3">
+            <button class="dropdown-button text-element" id="dropdown-button">Choose a certifier</button>
+            <div class="dropdown-menu" id="dropdown-menu">
+                {% for t in teacher %}
+                <li data-value="{{ t }}">{{ t }}</li>
+                {% endfor %}
+            </div>
+        </div>
+        <form id="itemForm" method="POST">
+            {{ form.hidden_tag() }} <!-- CSRF Token -->
+            <input type="hidden" name="certifier" value="some_value" />
+        </form>
+        <div class="column is-9">
+            <button class="submit-button text-element" type="submit">Submit</button>
+            <a href="/itemlist" class="text-element">
+                <button class="itemlist-button text-element" type="button">Item list</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Dropdown Handling
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        const button = document.getElementById("dropdown-button");
+        const menu = document.getElementById("dropdown-menu");
+        const items = menu.querySelectorAll("li");
+        const itemForm = document.getElementById('itemForm');
+
+        button.addEventListener("click", function () {
+            menu.classList.toggle("is-active");
+        });
+
+        items.forEach(item => {
+            item.addEventListener("click", function () {
+                const selectedValue = item.getAttribute("data-value");
+                const selectedText = item.textContent;
+
+                button.textContent = selectedText;
+                // Remove existing hidden input before adding a new one
+                const existingInput = itemForm.querySelector('input[name="certifier"]');
+                if (existingInput) existingInput.remove();
+                createHiddenInput(itemForm, 'certifier', selectedValue);
+
+                menu.classList.remove("is-active");
+            });
+        });
+
+        window.addEventListener("click", function (event) {
+            if (!menu.contains(event.target) && event.target !== button) {
+                menu.classList.remove("is-active");
+            }
+        });
+
+        // Submit Button Handling
+        const submitButton = document.querySelector('.submit-button');
+        submitButton.addEventListener('click', function () {
+            const certifier = document.querySelector('input[name="certifier"]')?.value;
+
+            if (!certifier) {
+                alert("Please select a certifier.");
+                return;
+            }
+
+            const selectedItems = JSON.parse(sessionStorage.getItem('myObjectListKey')) || [];
+            const borrow_date = new Date(selectedItems[0].dateFT.from).toISOString();
+            const return_date = new Date(selectedItems[0].dateFT.to).toISOString();
+            if (selectedItems.length === 0) {
+                alert("Please select at least one item.");
+                return;
+            }
+
+            const requestData = {
+                certifier,
+                items: selectedItems,
+                borrow_date,
+                return_date
+            };
+
+            fetch('/cart/api/fetch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,  // CSRF Token added here
+                },
+                body: JSON.stringify(requestData), // Send as JSON
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error('Error:', data.error);
+                        alert(data.error);
+                    } else {
+                        console.log('Success:', data);
+                        sessionStorage.removeItem('myObjectListKey');
+                        alert("Cart submitted successfully!");
+                        window.location.href = '/borrowing';
+                    }
+                })
+        });
+
+        // Function to create hidden input fields
+        function createHiddenInput(form, name, value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        }
+
+        // Session Storage Setup
+        // sessionStorage.setItem('myObjectListKey', JSON.stringify([ ... ]));
+
+        // Load Cart Items from Session Storage
+        const objectListString = sessionStorage.getItem('myObjectListKey');
+        const objectList = JSON.parse(objectListString);
+        const cartItemsContainer = document.getElementById('cartItemsContainer');
+
+        if (objectList && Array.isArray(objectList)) {
+            objectList.forEach((object, index) => {
+                const fromDate = new Date(object.dateFT.from);
+                const toDate = new Date(object.dateFT.to);
+                const formattedDate_borrow = `From: ${fromDate.getDate()} ${fromDate.getMonth() + 1} ${fromDate.getFullYear()}`;
+                const formattedDate_return = `To: ${toDate.getDate()} ${toDate.getMonth() + 1} ${toDate.getFullYear()}`;
+                const uniqueId = `${object.item}-${object.dateFT.from}-${object.dateFT.to}-${object.quantity}`;
+
+                const itemRow = document.createElement('div');
+                itemRow.innerHTML = `
+                <div class="box-cart" data-id="${uniqueId}" data-from="${object.dateFT.from}" data-to="${object.dateFT.to}">
+                    <div class="column is-fixed">
+                        <div class="info-shadows" style="padding: 0.5px; margin-right: 20px">
+                            <img class="img-item img-center" src="${object.image_url}">
+                        </div>
+                    </div>
+                    <div class="column is-fixed">
+                        <div class="info-shadows" style="padding: 30px;">
+                            <div class="text-element">${object.item}</div>
+                        </div>
+                    </div>
+                    <div class="column is-fixed">
+                        <div class="info-shadows" style="padding: 30px;">
+                            <div class="text-element">${object.quantity}</div>
+                        </div>
+                    </div>
+                    <div class="column is-fixed">
+                        <div class="info-shadows" style="padding: 20px;">
+                            <div class="text-element">${formattedDate_borrow}<br>${formattedDate_return}</div>
+                        </div>
+                    </div>
+                    <div class="column is-fixed" style="display: flex; justify-content: center; gap: 20px;">
+                        <button class="edit-item-button" data-index="${index}">
+                            <img class="action" src="static/ico/edit1.png">
+                        </button>
+                        <button class="remove-item-button" data-index="${uniqueId}">
+                            <img class="action" src="static/ico/edit2.png">
+                        </button>
+                    </div>
+                </div>
+            `;
+
+                // Remove Item Event Listener
+                itemRow.querySelector('.remove-item-button').addEventListener('click', function () {
+                    const idToRemove = this.getAttribute('data-index');  // Get the correct attribute
+                    let currentItems = JSON.parse(sessionStorage.getItem('myObjectListKey')) || [];
+
+                    // Filter out the item to be removed
+                    currentItems = currentItems.filter(item => {
+                        const itemId = `${item.item}-${item.dateFT.from}-${item.dateFT.to}-${item.quantity}`;
+                        return itemId !== idToRemove;
+                    });
+
+                    // Update session storage
+                    sessionStorage.setItem('myObjectListKey', JSON.stringify(currentItems));
+
+                    // Remove the item from the UI
+                    itemRow.remove();
+                });
+
+
+                // Edit Item Event Listener
+                itemRow.querySelector('.edit-item-button').addEventListener('click', function () {
+                    redirectToReserve(object.item, object.quantity, object.dateFT.from, object.dateFT.to);
+                    // storage session remove items
+                });
+
+                cartItemsContainer.appendChild(itemRow);
+            });
+        }
+
+        // Function to redirect to edit page
+        function redirectToReserve(item, quantity, from, to) {
+            const itemData = {
+                item: item,
+                quantity: quantity,
+                dateFT: {
+                    from: from,
+                    to: to
+                }
+            };
+            sessionStorage.setItem("selectedItem", JSON.stringify(itemData)); // Store in sessionStorage
+            const categoryName = encodeURIComponent(item);
+            window.location.href = `/reserve/${categoryName}`; // Redirect
+        }
+    });
+
+</script>
+
+{% endblock %}

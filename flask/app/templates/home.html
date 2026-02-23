@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="static/css/home.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+{% endblock %}
+
+{% block content %}
+<!-- header -->
+<div class="logo-header">
+    <p class="cs-borrow-header">CS BORROW</p>
+</div>
+
+<div id="item">
+    <p  class="PR-font">Public Relations</p>
+    <div class="swiper swiper-container ">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <figure class="image is-2by1">
+                    <img class="swiper-img" src="/static/img/new-item.png">
+                </figure>
+            </div>
+            <div class="swiper-slide">
+                <figure class="image is-2by1">
+                    <img class="swiper-img" src="/static/img/agreement.png">
+                </figure>
+            </div>
+            <div class="swiper-slide">
+                <figure class="image is-2by1">
+                    <img class="swiper-img" src="/static/img/agreement.png">
+                </figure>
+            </div>
+        </div>
+
+        <!-- pagination -->
+        <!-- ตัวบอกสถานะให้jsรู้ว่าอยู่swiper-slideอันไหน -->
+        <!-- aka ไข่ปลา -->
+        <div class="swiper-pagination"></div>
+
+        <!-- navigation buttons -->
+        <!-- ตัวเลื่อน -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+
+    </div>
+</div>
+
+<div class="information">
+    <div id="item" class="Allinfo">
+        <div class="infoleft">
+            <p class="infoH">This website is created for everyone in Computer Science</p>
+            <p class="infoDe">
+                to facilitate the borrowing and returning of various items within the department.
+                If you have any issues or need further inquiries, you can contact us.
+            </p>
+        </div>
+
+        <div class="Mbutton">
+            <div class="button ml-2" href="/itemlist">search item</div>
+            <div class="button ml-2" href="#">contact us</div>
+        </div>
+    </div>
+</div>
+
+<div id="item">
+    <div class="recommend" >
+        <p class="recommend-font">Recommend</h1>
+        <div class="mt-5 is-centered">
+            <div class="container is-flex is-justify-content-center is-align-items-center">
+                <div class="columns is-multiline">
+                    {% for name, count, url_img in items %}
+                    <div class="column is-one-quarter-desktop is-12-mobile is-flex is-justify-content-center is-align-items-center" >
+                        <div class="card">
+                            <p class="card-header-title is-centered">
+                                {{ name }}
+                            </p>
+                            <div class="card-image">
+                                <figure class="image is-128x128" style="margin: auto;">
+                                    <img src="{{ url_img }}" alt="{{ name }}">
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <p class="has-text-centered"><b>Available: {{ count }} pieces</b></p>
+                            </div>
+                            <!-- <footer class="card-footer" style="width: 100%;">
+                                <a href="#" class="card-footer-item">reserved</a>
+                            </footer> -->
+
+                            <footer class="card-footer">
+                                <a id="reservedB" class="card-footer-item" href="{{ url_for('reserve', category_name=name) }}">Reserve</a>
+                            </footer>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper('.swiper', {
+        slidesPerView: 1.75,
+        spaceBetween: 20,
+        centeredSlides: true,
+        loop: false,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const items = document.querySelectorAll('#item');
+        const observerOptions = {
+            threshold: 0.25
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+            });
+        }, observerOptions);
+
+        items.forEach(item => {
+            observer.observe(item);
+        });
+    });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+</script>
+{% endblock %}

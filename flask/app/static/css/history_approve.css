@@ -1,0 +1,333 @@
+.container-mode {
+    width: 310px;
+    height: 80px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-mode {
+    width: 120px;
+    height: 50px;
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background-color: #dcdcdc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.box-approve {
+    width: 620px;
+    height: auto;
+    margin-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 2px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.box-approve .infoBox {
+    position: relative;
+    width: 100%;
+}
+
+/* approve button */
+.button-approve {
+    background-color: #3dcd55;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center; /* จัดกึ่งกลางแนวนอน */
+    align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+    margin-top: 10px;
+    border-radius: 10px;
+    width: 120px; 
+    height: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.button-approve:hover {
+    background-color: #48ed64;
+}
+
+/* approve cancel */
+.button-cancel {
+    background-color: #dd2828;
+    color: rgb(255, 255, 255);
+    border-radius: 10px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center; /* จัดกึ่งกลางแนวนอน */
+    align-items: center; /* จัดกึ่งกลางแนวตั้ง */
+    margin-top: 10px;
+    border-radius: 10px;
+    width: 120px; 
+    height: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.button-cancel:hover {
+    background-color: #e95353;
+}
+
+.button-approve, .button-cancel {
+    display: inline-block;
+    min-width: 100px;
+    margin: 0 5px;
+}
+
+/* สำหรับหน้าจอมือถือ */
+@media screen and (max-width: 480px) {
+    form#appr {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .button-approve, .button-cancel {
+        flex: 1;
+        min-width: 0;
+        max-width: 150px;
+    }
+}
+
+.history-app {
+    width: 100%;
+    height: 100px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    padding: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+.history-app:hover {
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+.head-table {
+    width: 100%;
+    height: 60px;
+    color: #000000;
+    margin-top: 30px;
+    background-color: #dddddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.text-head {
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.columns.is-fixed {
+    width: 100%;
+}
+
+.column.is-fixed {
+    flex: 1 !important;
+    width: 25% !important;
+}
+
+.text-approve {
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+}
+
+.text-approve-name {
+    font-weight: 400;
+    text-align: center;
+    font-size: 20px;
+}
+
+.text-center {
+    font-weight: bold;
+    text-align: center;
+    font-size: 20px;
+}
+
+.text-title {
+    font-size: 30px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.info-shadows {
+    box-shadow: 4px 0 4px -4px rgba(0, 0, 0, 0.15);
+    padding: 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-shadows-last {
+    padding: 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ico-down {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+    margin-right: 20px;
+    align-items: left;
+    transform: rotate(0deg);
+}
+
+.ico-up {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+    margin-right: 20px;
+    align-items: left;
+    transform: rotate(180deg);
+}
+
+.status {
+    width: 25px;
+    height: 25px;
+}
+
+.info-content {
+    clear: both;
+    width: 620px;
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+    border-top: none;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: -1px;
+}
+
+.toggle-icon {
+    width: 30px;
+    height: 20px;
+    margin-top: 10px;
+    margin-right: 10px;
+    align-items: left;
+}
+
+/* approve */
+@media screen and (max-width: 768px) {
+    .info-content .columns {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    
+    .info-content .column {
+        flex: 0 0 auto;
+        width: 120px !important;
+        min-width: 120px !important;
+    }
+
+    .text-title {
+        font-size: 30px;
+        text-align: left;
+        font-weight: bold;
+        margin-left: 20px;
+    }
+}
+
+/* history */
+/* ลดขนาด padding ในหน้าจอเล็ก */
+@media screen and (max-width: 480px) {
+    .column {
+        padding: 0.25rem !important;
+    }
+
+    .history-app {
+        width: 100%;
+        height: 100px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+        margin-trim: 10px;
+        padding: 10px;
+        background-color: #ffffff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* บังคับให้แสดง 4 คอลัมน์ในทุกขนาดหน้าจอ */
+@media screen and (max-width: 768px) {
+    .column.is-3-mobile, 
+    .column.is-3-tablet, 
+    .column.is-3-desktop {
+        flex: none !important;
+        width: 20% !important;
+    }
+    
+    .columns {
+        display: flex !important;
+        flex-direction: row !important;
+    }
+    
+    /* ข้อความใน mobile ขึ้นบรรทัดใหม่ได้ */
+    .text-center {
+        white-space: normal;
+        word-wrap: break-word;
+        /* height: auto; */
+        font-size: 0.8rem;
+    }
+
+    .column.is-half-mobile {
+        flex: none !important;
+        width: 20% !important;
+    }
+    
+    .text-element {
+        font-size: 12px !important;
+        word-wrap: break-word;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .text-head {
+        font-size: 12px !important;
+        font-weight: bold;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    .info-shadows {
+        padding: 10px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+}
